@@ -22,20 +22,25 @@ ENV ERGATIS_DOWNLOAD_URL https://github.com/jorvis/ergatis/archive/$ERGATIS_VERS
 ENV WORKFLOW_VERSION 3.1.5
 ENV WORKFLOW_DOWNLOAD_URL http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
 
-ENV VIROME_VERSION 1.0
-ENV VIROME_DOWNLOAD_URL https://github.com/Virome-Collaboration-Group/virome_pipeline/archive/master.zip
+# Placeholder name for now
+ENV LGTSEEK_VERSION 1.0
+ENV LGTSEEK_DOWNLOAD_URL https://github.com/adkinsrs/LGTSeek_pipeline/archive/master.zip
 
-ENV CD_HIT_VERSION 4.6.4
-ENV CD_HIT_DOWNLOAD_URL https://github.com/weizhongli/cdhit/archive/V${CD_HIT_VERSION}.tar.gz
+ENV BWA_VERSION 0.7.15
+ENV BWA_DOWNLOAD_URL https://github.com/lh3/bwa/archive/v0.7.15.tar.gz
 
-ENV MGA_VERSION noversion
-ENV MGA_DOWNLOAD_URL http://metagene.nig.ac.jp/metagene/mga_x86_64.tar.gz
+ENV SAMTOOLS_VERSION 1.3.1
+ENV SAMTOOLS_DOWNLOAD_URL https://github.com/samtools/samtools/archive/1.3.1.tar.gz
 
 ENV NCBI_BLAST_VERSION 2.3.0
 ENV NCBI_BLAST_DOWNLOAD_URL ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
 
-ENV TRNASCAN_SE_VERSION 1.3.1
-ENV TRNASCAN_SE_DOWNLOAD_URL http://lowelab.ucsc.edu/software/tRNAscan-SE-${TRNASCAN_SE_VERSION}.tar.gz
+# Need to check versions and paths for Picard tools and Prinseq
+ENV PICARD_VERSION 1.3.1
+ENV PICARD_DOWLOAD_URL http://lowelab.ucsc.edu/software/tRNAscan-SE-${TRNASCAN_SE_VERSION}.tar.gz
+
+ENV PRINSEQ_VERSION 1.0.0
+ENV PRINSEQ_DOWNLOAD_URL http://www.shh.com/org
 
 #--------------------------------------------------------------------------------
 # BASICS
@@ -99,43 +104,30 @@ RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
 	&& ./deploy.sh < /tmp/workflow.deploy.answers
 
 #--------------------------------------------------------------------------------
-# VIROME -- install in /opt/package_virome
+# LGTSEEK -- install in /opt/package_lgtseek
 
-RUN mkdir -p /opt/src/virome
-WORKDIR /opt/src/virome
+RUN mkdir -p /opt/src/lgtseek
+WORKDIR /opt/src/lgtseek
 
 COPY ergatis.install.fix /tmp/.
-COPY virome.ergatis.ini /tmp/.
-COPY virome.software.config /tmp/.
+COPY lgtseek.ergatis.ini /tmp/.
+COPY lgtseek.software.config /tmp/.
 
-RUN curl -SL $VIROME_DOWNLOAD_URL -o virome.zip \
-	&& unzip -o virome.zip \
-	&& rm virome.zip \
-	&& mv /opt/src/virome/virome_pipeline-master /opt/package_virome \
-	&& cd /opt/package_virome/autopipe_package/ergatis \
+RUN curl -SL $LGTSEEK_DOWNLOAD_URL -o lgtseek.zip \
+	&& unzip -o lgtseek.zip \
+	&& rm lgtseek.zip \
+	&& mv /opt/src/lgtseek/lgtseek_pipeline-master /opt/package_lgtseek \
+	&& cd /opt/package_lgtseek/autopipe_package/ergatis \
 	&& cp /tmp/ergatis.install.fix . \
 	&& ./ergatis.install.fix \
-	&& perl Makefile.PL INSTALL_BASE=/opt/package_virome \
+	&& perl Makefile.PL INSTALL_BASE=/opt/package_lgtseek \
 	&& make \
 	&& make install \
-	&& cp /tmp/virome.ergatis.ini /opt/package_virome/autopipe_package/ergatis/htdocs/cgi/ergatis.ini \
-	&& cp /tmp/virome.ergatis.ini /opt/package_virome/autopipe_package/ergatis.ini \
-	&& cp /tmp/virome.software.config /opt/package_virome/software.config
+	&& cp /tmp/lgtseek.ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis/htdocs/cgi/ergatis.ini \
+	&& cp /tmp/lgtseek.ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis.ini \
+	&& cp /tmp/lgtseek.software.config /opt/package_lgtseek/software.config
 
-RUN echo "virome = /opt/projects/virome" >> /opt/package_virome/autopipe_package/ergatis.ini
-
-#--------------------------------------------------------------------------------
-# TRNASCAN-SE -- install in /opt/trnascan-se
-
-RUN mkdir -p /usr/src/trnascan-se
-WORKDIR /usr/src/trnascan-se
-
-RUN curl -SL $TRNASCAN_SE_DOWNLOAD_URL -o trnascan-se.tar.gz \
-	&& tar --strip-components=1 -xvf trnascan-se.tar.gz -C /usr/src/trnascan-se \
-	&& rm trnascan-se.tar.gz \
-	&& sed -i -e 's/..HOME./\/opt\/trnascan-se/' Makefile \
-	&& make \
-	&& make install
+RUN echo "lgtseek = /opt/projects/lgtseek" >> /opt/package_lgtseek/autopipe_package/ergatis.ini
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -152,32 +144,28 @@ RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
 RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 
 #--------------------------------------------------------------------------------
-# VIROME PROJECT
+# LGTSEEK PROJECT
 
 COPY project.config /tmp/.
 
-RUN mkdir -p /opt/projects/virome \
-	&& mkdir /opt/projects/virome/output_repository \
-	&& mkdir /opt/projects/virome/virome-cache-files \
-	&& mkdir /opt/projects/virome/software \
-	&& mkdir /opt/projects/virome/workflow \
-	&& mkdir /opt/projects/virome/workflow/lock_files \
-	&& mkdir /opt/projects/virome/workflow/project_id_repository \
-	&& mkdir /opt/projects/virome/workflow/runtime \
-	&& mkdir /opt/projects/virome/workflow/runtime/pipeline \
-	&& touch /opt/projects/virome/workflow/project_id_repository/valid_id_repository \
-        && cp /tmp/project.config /opt/projects/virome/workflow/.
+RUN mkdir -p /opt/projects/lgtseek \
+	&& mkdir /opt/projects/lgtseek/output_repository \
+	&& mkdir /opt/projects/lgtseek/software \
+	&& mkdir /opt/projects/lgtseek/workflow \
+	&& mkdir /opt/projects/lgtseek/workflow/lock_files \
+	&& mkdir /opt/projects/lgtseek/workflow/project_id_repository \
+	&& mkdir /opt/projects/lgtseek/workflow/runtime \
+	&& mkdir /opt/projects/lgtseek/workflow/runtime/pipeline \
+	&& touch /opt/projects/lgtseek/workflow/project_id_repository/valid_id_repository \
+        && cp /tmp/project.config /opt/projects/lgtseek/workflow/.
 
 #--------------------------------------------------------------------------------
 # Scripts
 
-ENV PERL5LIB=/opt/package_virome/autopipe_package/ergatis/lib
+ENV PERL5LIB=/opt/package_lgtseek/autopipe_package/ergatis/lib
 
 RUN mkdir -p /opt/scripts
 WORKDIR /opt/scripts
-
-COPY virome_454_fasta_unassembled_run_pipeline.pl /opt/scripts/.
-RUN chmod 755 /opt/scripts/virome_454_fasta_unassembled_run_pipeline.pl
 
 COPY wrapper.sh /opt/scripts/wrapper.sh
 RUN chmod 755 /opt/scripts/wrapper.sh
