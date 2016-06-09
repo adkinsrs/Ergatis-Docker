@@ -13,8 +13,8 @@ MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-ENV BMSL_VERSION v2r18b1
-ENV BMSL_DOWNLOAD_URL http://sourceforge.net/projects/bsml/files/bsml/bsml-$BMSL_VERSION/bsml-$BMSL_VERSION.tar.gz
+ENV BSML_VERSION v2r18b1
+ENV BSML_DOWNLOAD_URL http://sourceforge.net/projects/bsml/files/bsml/bsml-$BSML_VERSION/bsml-$BSML_VERSION.tar.gz
 
 ENV ERGATIS_VERSION v2r19b4
 ENV ERGATIS_DOWNLOAD_URL https://github.com/jorvis/ergatis/archive/$ERGATIS_VERSION.tar.gz
@@ -22,25 +22,25 @@ ENV ERGATIS_DOWNLOAD_URL https://github.com/jorvis/ergatis/archive/$ERGATIS_VERS
 ENV WORKFLOW_VERSION 3.1.5
 ENV WORKFLOW_DOWNLOAD_URL http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
 
-# Placeholder name for now
+# Placeholder name for now... do I want to create a separate repo for this?
 ENV LGTSEEK_VERSION 1.0
 ENV LGTSEEK_DOWNLOAD_URL https://github.com/adkinsrs/LGTSeek_pipeline/archive/master.zip
 
 ENV BWA_VERSION 0.7.15
-ENV BWA_DOWNLOAD_URL https://github.com/lh3/bwa/archive/v0.7.15.tar.gz
+ENV BWA_DOWNLOAD_URL https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
 ENV SAMTOOLS_VERSION 1.3.1
-ENV SAMTOOLS_DOWNLOAD_URL https://github.com/samtools/samtools/archive/1.3.1.tar.gz
+ENV SAMTOOLS_DOWNLOAD_URL https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
 ENV NCBI_BLAST_VERSION 2.3.0
 ENV NCBI_BLAST_DOWNLOAD_URL ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
 
 # Need to check versions and paths for Picard tools and Prinseq
-ENV PICARD_VERSION 1.3.1
-ENV PICARD_DOWLOAD_URL http://lowelab.ucsc.edu/software/tRNAscan-SE-${TRNASCAN_SE_VERSION}.tar.gz
+ENV PICARD_VERSION 2.4.1
+ENV PICARD_DOWLOAD_URL https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
-ENV PRINSEQ_VERSION 1.0.0
-ENV PRINSEQ_DOWNLOAD_URL http://www.shh.com/org
+ENV PRINSEQ_VERSION 0.20.4
+ENV PRINSEQ_DOWNLOAD_URL https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 
 #--------------------------------------------------------------------------------
 # BASICS
