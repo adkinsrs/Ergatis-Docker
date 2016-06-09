@@ -82,7 +82,7 @@ RUN apt-get update && apt-get install -y \
 	libxml-writer-perl \
   && rm -rf /var/lib/apt/lists/*
 
-COPY lib/lib*.deb /tmp/
+#COPY lib/lib*.deb /tmp/
 
 RUN dpkg -i \
 	/tmp/libfile-mirror-perl_0.10-1_all.deb \
