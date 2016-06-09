@@ -8,7 +8,7 @@
 
 FROM ubuntu:trusty
 
-MAINTAINER Tom Emmel <temmel@som.umaryland.edu>
+MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
 #--------------------------------------------------------------------------------
 # SOFTWARE
@@ -164,15 +164,16 @@ RUN mkdir -p /opt/projects/lgtseek \
 
 ENV PERL5LIB=/opt/package_lgtseek/autopipe_package/ergatis/lib
 
-RUN mkdir -p /opt/scripts
-WORKDIR /opt/scripts
+#RUN mkdir -p /opt/scripts
+#WORKDIR /opt/scripts
 
-COPY wrapper.sh /opt/scripts/wrapper.sh
-RUN chmod 755 /opt/scripts/wrapper.sh
+#COPY wrapper.sh /opt/scripts/wrapper.sh
+#RUN chmod 755 /opt/scripts/wrapper.sh
 
-COPY file.fasta /tmp/.
+#COPY file.fasta /tmp/.
 
 #--------------------------------------------------------------------------------
 # Default Command
 
-CMD [ "/opt/scripts/wrapper.sh" ]
+# This command starts a pipeline upon launching the container
+#CMD [ "/opt/scripts/wrapper.sh" ]
