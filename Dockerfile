@@ -23,8 +23,8 @@ ENV WORKFLOW_VERSION 3.1.5
 ENV WORKFLOW_DOWNLOAD_URL http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
 
 # Placeholder name for now... do I want to create a separate repo for this?
-ENV LGTSEEK_VERSION 1.0
-ENV LGTSEEK_DOWNLOAD_URL https://github.com/adkinsrs/LGTSeek_pipeline/archive/master.zip
+#ENV LGTSEEK_VERSION 1.0
+#ENV LGTSEEK_DOWNLOAD_URL https://github.com/adkinsrs/LGTSeek_pipeline/archive/master.zip
 
 ENV BWA_VERSION 0.7.15
 ENV BWA_DOWNLOAD_URL https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
@@ -56,7 +56,7 @@ RUN apt-get update && apt-get install -y \
 	openjdk-6-jre \
 	ncbi-blast+ \
 	zip \
-	zsync \
+#	zsync \
   && rm -rf /var/lib/apt/lists/*
 
 #--------------------------------------------------------------------------------
@@ -111,23 +111,23 @@ RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
 RUN mkdir -p /opt/src/lgtseek
 WORKDIR /opt/src/lgtseek
 
-COPY ergatis.install.fix /tmp/.
-COPY lgtseek.ergatis.ini /tmp/.
-COPY lgtseek.software.config /tmp/.
+#COPY ergatis.install.fix /tmp/.
+COPY ergatis.ini /tmp/.
+COPY software.config /tmp/.
 
-RUN curl -SL $LGTSEEK_DOWNLOAD_URL -o lgtseek.zip \
-	&& unzip -o lgtseek.zip \
-	&& rm lgtseek.zip \
-	&& mv /opt/src/lgtseek/lgtseek_pipeline-master /opt/package_lgtseek \
-	&& cd /opt/package_lgtseek/autopipe_package/ergatis \
-	&& cp /tmp/ergatis.install.fix . \
-	&& ./ergatis.install.fix \
-	&& perl Makefile.PL INSTALL_BASE=/opt/package_lgtseek \
-	&& make \
-	&& make install \
-	&& cp /tmp/lgtseek.ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis/htdocs/cgi/ergatis.ini \
-	&& cp /tmp/lgtseek.ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis.ini \
-	&& cp /tmp/lgtseek.software.config /opt/package_lgtseek/software.config
+#RUN curl -SL $LGTSEEK_DOWNLOAD_URL -o lgtseek.zip \
+#	&& unzip -o lgtseek.zip \
+#	&& rm lgtseek.zip \
+#	&& mv /opt/src/lgtseek/lgtseek_pipeline-master /opt/package_lgtseek \
+#	&& cd /opt/package_lgtseek/autopipe_package/ergatis \
+#	&& cp /tmp/ergatis.install.fix . \
+#	&& ./ergatis.install.fix \
+#	&& perl Makefile.PL INSTALL_BASE=/opt/package_lgtseek \
+#	&& make \
+#	&& make install \
+#	&& cp /tmp/ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis/htdocs/cgi/ergatis.ini \
+#	&& cp /tmp/ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis.ini \
+#	&& cp /tmp/software.config /opt/package_lgtseek/software.config
 
 RUN echo "lgtseek = /opt/projects/lgtseek" >> /opt/package_lgtseek/autopipe_package/ergatis.ini
 
