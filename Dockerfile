@@ -35,12 +35,14 @@ ENV SAMTOOLS_DOWNLOAD_URL https://github.com/samtools/samtools/archive/${SAMTOOL
 ENV NCBI_BLAST_VERSION 2.3.0
 ENV NCBI_BLAST_DOWNLOAD_URL ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
 
-# Need to check versions and paths for Picard tools and Prinseq
 ENV PICARD_VERSION 2.4.1
 ENV PICARD_DOWLOAD_URL https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
 ENV PRINSEQ_VERSION 0.20.4
 ENV PRINSEQ_DOWNLOAD_URL https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
+
+ENV SRA_VERSION 2.6.3
+ENV SRA_DOWLOAD_URL https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
 
 #--------------------------------------------------------------------------------
 # BASICS
