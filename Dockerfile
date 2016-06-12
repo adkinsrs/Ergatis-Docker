@@ -3,7 +3,7 @@
 # Based on the LGTSeek core Dockerfile
 ############################################################ 
 
-FROM lgtseek-core
+FROM lgtseek:core
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
