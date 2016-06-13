@@ -1,10 +1,7 @@
-############################################################
+###########################################################
 # Dockerfile to build container lgtseek core image
 # Based on Ubuntu
-############################################################ 
-
-# Docker 1.9.1 currently hangs when attempting to build openjdk-6-jre.
-# Upgrade Docker by installing DockerToolbox-1.10.0-rc3.
+############################################################
 
 FROM ubuntu:trusty
 
@@ -16,40 +13,21 @@ MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 ENV BSML_VERSION v2r18b1
 ENV BSML_DOWNLOAD_URL http://sourceforge.net/projects/bsml/files/bsml/bsml-$BSML_VERSION/bsml-$BSML_VERSION.tar.gz
 
-ENV WORKFLOW_VERSION 3.1.5
-ENV WORKFLOW_DOWNLOAD_URL http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
-
-ENV BWA_VERSION 0.7.15
-ENV BWA_DOWNLOAD_URL https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
-
-ENV SAMTOOLS_VERSION 1.3.1
-ENV SAMTOOLS_DOWNLOAD_URL https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
-
-ENV NCBI_BLAST_VERSION 2.3.0
-ENV NCBI_BLAST_DOWNLOAD_URL ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
-
-ENV PICARD_VERSION 2.4.1
-ENV PICARD_DOWLOAD_URL https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
-
-ENV PRINSEQ_VERSION 0.20.4
-ENV PRINSEQ_DOWNLOAD_URL https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
-
-ENV SRA_VERSION 2.6.3
-ENV SRA_DOWLOAD_URL https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
+ENV ERGATIS_VERSION v2r19b4
+ENV ERGATIS_DOWNLOAD_URL https://github.com/jorvis/ergatis/archive/$ERGATIS_VERSION.tar.gz
 
 #--------------------------------------------------------------------------------
 # BASICS
 
 RUN apt-get update && apt-get install -y \
-	build-essential \
-	curl \
-	cpanminus \
-	dh-make-perl \
+	ant \
 	apache2 \
-	openjdk-6-jre \
-	ncbi-blast+ \
+	build-essential \
+	cpanminus \
+	curl \
+	default-jre \
+	dh-make-perl \
 	zip \
-#	zsync \
   && rm -rf /var/lib/apt/lists/*
 
 #--------------------------------------------------------------------------------
@@ -75,7 +53,7 @@ RUN apt-get update && apt-get install -y \
 	libxml-writer-perl \
   && rm -rf /var/lib/apt/lists/*
 
-#COPY lib/lib*.deb /tmp/
+COPY lib/lib*.deb /tmp/
 
 RUN dpkg -i \
 	/tmp/libfile-mirror-perl_0.10-1_all.deb \
@@ -98,3 +76,25 @@ RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
 	&& chmod 777 /opt/workflow/server-conf \
 	&& ./deploy.sh < /tmp/workflow.deploy.answers
 
+#--------------------------------------------------------------------------------
+# SCRATCH
+
+RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
+	&& mkdir /usr/local/scratch/ergatis && chmod 777 /usr/local/scratch/ergatis \
+	&& mkdir /usr/local/scratch/ergatis/archival && chmod 777 /usr/local/scratch/ergatis/archival \
+	&& mkdir /usr/local/scratch/workflow && chmod 777 /usr/local/scratch/workflow \
+	&& mkdir /usr/local/scratch/workflow/id_repository && chmod 777 /usr/local/scratch/workflow/id_repository \
+	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
+	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
+	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts
+
+RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
+
+#--------------------------------------------------------------------------------
+# ERGATIS SETUP
+
+ENV PERL5LIB=/opt/ergatis/lib
+RUN mkdir /opt/ergatis
+
+COPY ergatis.ini /opt/ergatis/.
+COPY software.config /opt/ergatis/.

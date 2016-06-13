@@ -1,93 +1,141 @@
 ############################################################
 # Dockerfile to build container lgtseek pipeline image
-# Based on the LGTSeek core Dockerfile
-############################################################ 
+# Builds off of the Ergatis core Dockerfile
+############################################################
 
-FROM lgtseek:core
+FROM lgtseek:ergatis-core
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
+
+# The project name
+ARG PROJECT lgtseek
 
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-ENV ERGATIS_VERSION v2r19b4
-ENV ERGATIS_DOWNLOAD_URL https://github.com/jorvis/ergatis/archive/$ERGATIS_VERSION.tar.gz
+ENV WORKFLOW_VERSION 3.1.5
+ENV WORKFLOW_DOWNLOAD_URL http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
 
-# Placeholder name for now... do I want to create a separate repo for this?
-#ENV LGTSEEK_VERSION 1.0
-#ENV LGTSEEK_DOWNLOAD_URL https://github.com/adkinsrs/LGTSeek_pipeline/archive/master.zip
+ENV BWA_VERSION 0.7.12
+ENV BWA_DOWNLOAD_URL https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
-#--------------------------------------------------------------------------------
-# LGTSEEK -- install in /opt/package_lgtseek
+ENV SAMTOOLS_VERSION 1.3.1
+ENV SAMTOOLS_DOWNLOAD_URL https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
-RUN mkdir -p /opt/src/lgtseek
-WORKDIR /opt/src/lgtseek
+ENV NCBI_BLAST_VERSION 2.3.0
+ENV NCBI_BLAST_DOWNLOAD_URL ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
 
-#COPY ergatis.install.fix /tmp/.
-COPY ergatis.ini /tmp/.
-COPY software.config /tmp/.
+ENV PICARD_VERSION 2.4.1
+ENV PICARD_DOWLOAD_URL https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
-#RUN curl -SL $LGTSEEK_DOWNLOAD_URL -o lgtseek.zip \
-#	&& unzip -o lgtseek.zip \
-#	&& rm lgtseek.zip \
-#	&& mv /opt/src/lgtseek/lgtseek_pipeline-master /opt/package_lgtseek \
-#	&& cd /opt/package_lgtseek/autopipe_package/ergatis \
-#	&& cp /tmp/ergatis.install.fix . \
-#	&& ./ergatis.install.fix \
-#	&& perl Makefile.PL INSTALL_BASE=/opt/package_lgtseek \
-#	&& make \
-#	&& make install \
-#	&& cp /tmp/ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis/htdocs/cgi/ergatis.ini \
-#	&& cp /tmp/ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis.ini \
-#	&& cp /tmp/software.config /opt/package_lgtseek/software.config
-
-#RUN echo "lgtseek = /opt/projects/lgtseek" >> /opt/package_lgtseek/autopipe_package/ergatis.ini
+ENV PRINSEQ_VERSION 0.20.4
+ENV PRINSEQ_DOWNLOAD_URL https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
+ENV SRA_VERSION 2.6.3
+ENV SRA_DOWLOAD_URL https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
 
 #--------------------------------------------------------------------------------
-# SCRATCH
+# BWA -- install in /opt/bwa
 
-RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
-	&& mkdir /usr/local/scratch/ergatis && chmod 777 /usr/local/scratch/ergatis \
-	&& mkdir /usr/local/scratch/ergatis/archival && chmod 777 /usr/local/scratch/ergatis/archival \
-	&& mkdir /usr/local/scratch/workflow && chmod 777 /usr/local/scratch/workflow \
-	&& mkdir /usr/local/scratch/workflow/id_repository && chmod 777 /usr/local/scratch/workflow/id_repository \
-	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
-	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
-	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts
+RUN mkdir -p /usr/src/bwa
+WORKDIR /usr/src/bwa
 
-RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
+RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
+	&& tar --strip-components=1 -xvf bwa.tar.gz -C /usr/src/bwa \
+	&& rm bwa.tar.gz \
+	&& make \
+	&& make install
 
 #--------------------------------------------------------------------------------
-# LGTSEEK PROJECT
+# SAMTOOLS -- install in /opt/samtools
+
+RUN mkdir -p /usr/src/samtools
+WORKDIR /usr/src/samtools
+
+RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
+	&& tar --strip-components=1 -xvf samtools.tar.gz -C /usr/src/samtools \
+	&& rm samtools.tar.gz \
+	&& sed -i -e 's/= \/usr\/local/= \/opt\/samtools/' Makefile \
+	&& make \
+	&& make install
+
+#--------------------------------------------------------------------------------
+# PICARD -- install in /opt/picard
+
+RUN mkdir -p /usr/src/picard
+WORKDIR /usr/src/picard
+
+RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
+	&& tar --strip-components=1 -xvf picard.tar.gz -C /usr/src/picard_tools \
+	&& rm picard.tar.gz \
+	&& ant clone-htsjdk \
+	&& ant \
+	&& ln -s /usr/src/picard_tools /opt/picard_tools
+
+#--------------------------------------------------------------------------------
+# PRINSEQ -- install in /opt/prinseq
+
+RUN mkdir -p /usr/src/prinseq
+WORKDIR /usr/src/prinseq
+
+RUN curl -SL $PRINSEQ_DOWNLOAD_URL -o prinseq.tar.gz \
+	&& tar --strip-components=1 -xvf prinseq.tar.gz -C /usr/src/prinseq \
+	&& rm prinseq.tar.gz \
+	&& ln -s /usr/src/prinseq /opt/prinseq
+
+#--------------------------------------------------------------------------------
+# SRA_TOOKKIT -- install in /opt/sratoolkit
+
+RUN mkdir -p /usr/src/sratoolkit
+WORKDIR /usr/src/sratoolkit
+
+RUN curl -SL $SRA_DOWNLOAD_URL -o sra.tar.gz \
+	&& tar --strip-components=1 -xvf sra.tar.gz -C /usr/src/sratoolkit \
+	&& rm sra.tar.gz \
+	&& sed -i -e 's/..CURDIR./\/opt\/sratoolkit/' Makefile \
+	&& make \
+	&& make install
+
+#--------------------------------------------------------------------------------
+# NCBI_BLAST -- install in /opt/ncbi_blast
+
+RUN mkdir -p /usr/src/ncbi_blast
+WORKDIR /usr/src/ncbi_blast
+
+RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
+	&& tar --strip-components=1 -xvf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
+	&& rm ncbi_blast.tar.gz \
+	&& sed -i -e 's/..HOME./\/opt\/ncbi_blast/' Makefile \
+	&& make \
+	&& make install
+
+#--------------------------------------------------------------------------------
+# ERGATIS SETUP
+
+COPY bin /opt/ergatis/.
+COPY docs /opt/ergatis/.
+COPY htdocs /opt/ergatis/.
+COPY lib /opt/ergatis/.
+COPY pipeline_templates /opt/ergatis/.
+
+#--------------------------------------------------------------------------------
+# PROJECT REPOSITORY SETUP
 
 COPY project.config /tmp/.
 
-RUN mkdir -p /opt/projects/lgtseek \
-	&& mkdir /opt/projects/lgtseek/output_repository \
-	&& mkdir /opt/projects/lgtseek/software \
-	&& mkdir /opt/projects/lgtseek/workflow \
-	&& mkdir /opt/projects/lgtseek/workflow/lock_files \
-	&& mkdir /opt/projects/lgtseek/workflow/project_id_repository \
-	&& mkdir /opt/projects/lgtseek/workflow/runtime \
-	&& mkdir /opt/projects/lgtseek/workflow/runtime/pipeline \
-	&& touch /opt/projects/lgtseek/workflow/project_id_repository/valid_id_repository \
-        && cp /tmp/project.config /opt/projects/lgtseek/workflow/.
+RUN mkdir -p /opt/projects/PROJECT \
+	&& mkdir /opt/projects/PROJECT/output_repository \
+	&& mkdir /opt/projects/PROJECT/software \
+	&& mkdir /opt/projects/PROJECT/workflow \
+	&& mkdir /opt/projects/PROJECT/workflow/lock_files \
+	&& mkdir /opt/projects/PROJECT/workflow/project_id_repository \
+	&& mkdir /opt/projects/PROJECT/workflow/runtime \
+	&& mkdir /opt/projects/PROJECT/workflow/runtime/pipeline \
+	&& touch /opt/projects/PROJECT/workflow/project_id_repository/valid_id_repository \
+    && cp /tmp/project.config /opt/projects/PROJECT/workflow/.
 
 #--------------------------------------------------------------------------------
 # Scripts
 
-ENV PERL5LIB=/opt/package_lgtseek/autopipe_package/ergatis/lib
 
 RUN mkdir -p /opt/scripts
 WORKDIR /opt/scripts
-
-#COPY wrapper.sh /opt/scripts/wrapper.sh
-#RUN chmod 755 /opt/scripts/wrapper.sh
-
-#COPY file.fasta /tmp/.
-
-#--------------------------------------------------------------------------------
-# Default Command
-
-# This command starts a pipeline upon launching the container
-#CMD [ "/opt/scripts/wrapper.sh" ]
