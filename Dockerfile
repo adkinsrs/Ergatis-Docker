@@ -56,7 +56,6 @@ RUN apt-get update && apt-get install -y \
 	openjdk-6-jre \
 	ncbi-blast+ \
 	zip \
-#	zsync \
   && rm -rf /var/lib/apt/lists/*
 
 #--------------------------------------------------------------------------------
@@ -84,11 +83,11 @@ RUN apt-get update && apt-get install -y \
 
 #COPY lib/lib*.deb /tmp/
 
-RUN dpkg -i \
-	/tmp/libfile-mirror-perl_0.10-1_all.deb \
-	/tmp/liblog-cabin-perl_0.06-1_all.deb \
-  && rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
-	/tmp/liblog-cabin-perl_0.06-1_all.deb
+#RUN dpkg -i \
+#	/tmp/libfile-mirror-perl_0.10-1_all.deb \
+#	/tmp/liblog-cabin-perl_0.06-1_all.deb \
+#  && rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
+#	/tmp/liblog-cabin-perl_0.06-1_all.deb
 
 #--------------------------------------------------------------------------------
 # WORKFLOW -- install in /opt/workflow
@@ -129,7 +128,7 @@ COPY software.config /tmp/.
 #	&& cp /tmp/ergatis.ini /opt/package_lgtseek/autopipe_package/ergatis.ini \
 #	&& cp /tmp/software.config /opt/package_lgtseek/software.config
 
-RUN echo "lgtseek = /opt/projects/lgtseek" >> /opt/package_lgtseek/autopipe_package/ergatis.ini
+#RUN echo "lgtseek = /opt/projects/lgtseek" >> /opt/package_lgtseek/autopipe_package/ergatis.ini
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -166,8 +165,8 @@ RUN mkdir -p /opt/projects/lgtseek \
 
 ENV PERL5LIB=/opt/package_lgtseek/autopipe_package/ergatis/lib
 
-#RUN mkdir -p /opt/scripts
-#WORKDIR /opt/scripts
+RUN mkdir -p /opt/scripts
+WORKDIR /opt/scripts
 
 #COPY wrapper.sh /opt/scripts/wrapper.sh
 #RUN chmod 755 /opt/scripts/wrapper.sh
