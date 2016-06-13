@@ -4,7 +4,7 @@ create_file_iterator_list
 create_iterator_groups
 create_list_file
 download_sra
-filter_dups_lc_seq
+filter_dups_lc_seqs
 filter_lgt_best_hit
 lgt_build_index
 lgt_bwa
@@ -15,6 +15,7 @@ lgt_finder
 lgt_mpileup
 replace_config_keys
 replace_template_keys
+sam2fasta
 sam2lca
 split_multifasta
 sra2fastq

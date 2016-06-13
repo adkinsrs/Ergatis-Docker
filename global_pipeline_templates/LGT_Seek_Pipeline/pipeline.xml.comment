@@ -1,0 +1,8 @@
+A pipeline that is designed to find lateral gene transferrence (LGT) between a bacterial donor and a eukaryotic host.
+Currently in the pipeline, certain components need the following parameters filled:
+[download_sra default] - $;RUN_ID$; - The run ID from the Sequence Read Archive (SRA)
+[lgt_build_bwa_index donor] - $;INPUT_FILE$; - the Donor fasta reference
+[lgt_build_bwa_index recipient] - $;INPUT_FILE$; - the Host/Recipient fasta reference
+[lgt_build_bwa_index refseq] - $;INPUT_FILES$; - The Refseq fasta sequence
+[lgt_mpileup lgt] - $;FASTA_REF$; - The Host/Recipient fasta reference
+all lgt_bwa components - $;BASENAME$; - The filename of the indexed reference (example - if /path/to/ref.fa then use "ref.fa")
