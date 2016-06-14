@@ -13,13 +13,13 @@ EXPOSE 8080
 # SOFTWARE
 
 ARG BSML_VERSION=v2r18b1
-ARG BSML_DOWNLOAD_URL=http://sourceforge.net/projects/bsml/files/bsml/bsml-$BSML_VERSION/bsml-$BSML_VERSION.tar.gz
+ARG BSML_DOWNLOAD_URL=http://sourceforge.net/projects/bsml/files/bsml/bsml-${BSML_VERSION}/bsml-${BSML_VERSION}.tar.gz
 
 ARG ERGATIS_VERSION=v2r19b4
-ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/$ERGATIS_VERSION.tar.gz
+ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/${ERGATIS_VERSION}.tar.gz
 
 ARG WORKFLOW_VERSION=3.1.5
-ARG WORKFLOW_DOWNLOAD_URL=http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
+ARG WORKFLOW_DOWNLOAD_URL=http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-${WORKFLOW_VERSION}.tar.gz
 
 #--------------------------------------------------------------------------------
 # BASICS
@@ -27,13 +27,16 @@ ARG WORKFLOW_DOWNLOAD_URL=http://sourceforge.net/projects/tigr-workflow/files/ti
 RUN apt-get update && apt-get install -y \
 	ant \
 	apache2 \
+	autoconf \
 	build-essential \
 	cpanminus \
 	curl \
-	default-jre \
+	default-jdk\
 	dh-make-perl \
 	zip \
-  && rm -rf /var/lib/apt/lists/*
+	zlib1g-dev \
+	&& apt-get clean autoclean \
+	&& apt-get autoremove -y
 
 #--------------------------------------------------------------------------------
 # PERL for ergatis
@@ -56,7 +59,8 @@ RUN apt-get update && apt-get install -y \
 	libxml-rss-perl \
 	libxml-twig-perl \
 	libxml-writer-perl \
-  && rm -rf /var/lib/apt/lists/*
+	&& apt-get clean autoclean \
+	&& apt-get autoremove -y
 
 COPY lib/lib*.deb /tmp/
 
@@ -100,5 +104,7 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 
 RUN mkdir /opt/ergatis
 ENV PERL5LIB=/opt/ergatis/lib/perl5
+
+#TODO: Add htdocs site - minus specific pipeline-building UI
 
 COPY ergatis.ini /opt/ergatis/.

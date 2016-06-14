@@ -13,14 +13,17 @@ ARG PROJECT=lgtseek
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-ARG BWA_VERSION=0.7.12
+ARG BWA_VERSION=0.7.15
 ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
 ARG NCBI_BLAST_VERSION=2.3.0
 ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
 
+ARG HTSLIB_VERSION=1.3.1
+ARG HTSLIB_DOWNLOAD_URL=https://github.com/samtools/htslib/archive/${HTSLIB_VERSION}.tar.gz
+
 ARG PICARD_VERSION=2.4.1
-ARG PICARD_DOWLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
+ARG PICARD_DOWNLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
 ARG PRINSEQ_VERSION=0.20.4
 ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
@@ -40,34 +43,66 @@ WORKDIR /usr/src/bwa
 RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
 	&& tar --strip-components=1 -xvf bwa.tar.gz -C /usr/src/bwa \
 	&& rm bwa.tar.gz \
-	&& make \
-	&& make install
+	&& make all \
+	&& ln -s /usr/src/bwa /opt/bwa
+
+#--------------------------------------------------------------------------------
+# HTSLIB -- install in /opt/htslib (required for Samtools)
+
+#RUN mkdir -p /usr/src/htslib
+#WORKDIR /usr/src/htslib
+
+#RUN curl -SL $HTSLIB_DOWNLOAD_URL -o htslib.tar.gz \
+#	&& tar --strip-components=1 -xvf htslib.tar.gz -C /usr/src/htslib \
+#	&& rm htslib.tar.gz \
+#	&& autoconf \
+#	&& ./configure --prefix /opt/htslib \
+#	&& make \
+#	&& make install
 
 #--------------------------------------------------------------------------------
 # SAMTOOLS -- install in /opt/samtools
 
-RUN mkdir -p /usr/src/samtools
-WORKDIR /usr/src/samtools
+RUN apt-get update && apt-get install -y \
+	samtools \
+	&& apt-get clean autoclean \
+	&& apt-get autoremove -y
 
-RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
-	&& tar --strip-components=1 -xvf samtools.tar.gz -C /usr/src/samtools \
-	&& rm samtools.tar.gz \
-	&& sed -i -e 's/= \/usr\/local/= \/opt\/samtools/' Makefile \
-	&& make \
-	&& make install
+#RUN mkdir -p /usr/src/samtools
+#WORKDIR /usr/src/samtools
+
+#RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
+#	&& tar --strip-components=1 -xvf samtools.tar.gz -C /usr/src/samtools \
+#	&& rm samtools.tar.gz \
+#	&& autoconf \
+#	&& ./configure --without-curses --prefix=/opt/samtools --with-htslib=/opt/htslib/ \
+#	&& make all all-htslib \
+#	&& make install
 
 #--------------------------------------------------------------------------------
 # PICARD -- install in /opt/picard
 
-RUN mkdir -p /usr/src/picard
-WORKDIR /usr/src/picard
+RUN mkdir -p /usr/src/picard_tools
+WORKDIR /usr/src/picard_tools
+
+# Clone out htsjdk. First turn off git ssl verification
+RUN git config --global http.sslVerify false && git clone https://github.com/samtools/htsjdk.git
 
 RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
 	&& tar --strip-components=1 -xvf picard.tar.gz -C /usr/src/picard_tools \
-	&& rm picard.tar.gz \
-	&& ant clone-htsjdk \
-	&& ant \
-	&& ln -s /usr/src/picard_tools /opt/picard_tools
+	&& rm picard.tar.gz
+
+# Build the distribution jar, clean up everything else
+RUN ant clean all && \
+    mv dist/picard.jar picard.jar && \
+    mv src/scripts/picard/docker_helper.sh docker_helper.sh && \
+    ant clean && \
+    rm -rf htsjdk && \
+    rm -rf src && \
+    rm -rf lib && \
+    rm build.xml
+
+#	&& ln -s /usr/src/picard_tools /opt/picard_tools
 
 #--------------------------------------------------------------------------------
 # PRINSEQ -- install in /opt/prinseq
@@ -77,8 +112,8 @@ WORKDIR /usr/src/prinseq
 
 RUN curl -SL $PRINSEQ_DOWNLOAD_URL -o prinseq.tar.gz \
 	&& tar --strip-components=1 -xvf prinseq.tar.gz -C /usr/src/prinseq \
-	&& rm prinseq.tar.gz \
-	&& ln -s /usr/src/prinseq /opt/prinseq
+	&& rm prinseq.tar.gz
+#	&& ln -s /usr/src/prinseq /opt/prinseq
 
 #--------------------------------------------------------------------------------
 # SRA_TOOKKIT -- install in /opt/sratoolkit
