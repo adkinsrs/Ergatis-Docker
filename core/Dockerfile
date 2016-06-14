@@ -7,14 +7,19 @@ FROM ubuntu:trusty
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
+EXPOSE 8080
+
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-ENV BSML_VERSION v2r18b1
-ENV BSML_DOWNLOAD_URL http://sourceforge.net/projects/bsml/files/bsml/bsml-$BSML_VERSION/bsml-$BSML_VERSION.tar.gz
+ARG BSML_VERSION=v2r18b1
+ARG BSML_DOWNLOAD_URL=http://sourceforge.net/projects/bsml/files/bsml/bsml-$BSML_VERSION/bsml-$BSML_VERSION.tar.gz
 
-ENV ERGATIS_VERSION v2r19b4
-ENV ERGATIS_DOWNLOAD_URL https://github.com/jorvis/ergatis/archive/$ERGATIS_VERSION.tar.gz
+ARG ERGATIS_VERSION=v2r19b4
+ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/$ERGATIS_VERSION.tar.gz
+
+ARG WORKFLOW_VERSION=3.1.5
+ARG WORKFLOW_DOWNLOAD_URL=http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-$WORKFLOW_VERSION.tar.gz
 
 #--------------------------------------------------------------------------------
 # BASICS
@@ -93,8 +98,7 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
 
-ENV PERL5LIB=/opt/ergatis/lib
 RUN mkdir /opt/ergatis
+ENV PERL5LIB=/opt/ergatis/lib/perl5
 
 COPY ergatis.ini /opt/ergatis/.
-COPY software.config /opt/ergatis/.
