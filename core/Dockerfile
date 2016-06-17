@@ -102,9 +102,11 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
 
-RUN mkdir /opt/ergatis
+RUN mkdir -p /opt/ergatis
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
 #TODO: Add htdocs site - minus specific pipeline-building UI
+RUN mkdir /var/www/html/ergatis
+COPY htdocs/* /var/www/html/ergatis/.
 
 COPY ergatis.ini /opt/ergatis/.

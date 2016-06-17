@@ -147,10 +147,11 @@ RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
 
 COPY bin /opt/ergatis/.
 COPY docs /opt/ergatis/.
-COPY htdocs /opt/ergatis/.
 COPY lib /opt/ergatis/.
 COPY pipeline_templates /opt/ergatis/.
 COPY software.config /opt/ergatis/.
+
+COPY lgtbuilder /var/www/html/ergatis/.
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP
