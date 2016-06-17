@@ -151,7 +151,9 @@ COPY lib /opt/ergatis/.
 COPY pipeline_templates /opt/ergatis/.
 COPY software.config /opt/ergatis/.
 
-COPY lgtbuilder /var/www/html/ergatis/.
+#--------------------------------------------------------------------------------
+# PIPELINE BUILDER SETUP -- Setting up the pipeline creation UI site
+COPY lgtbuilder /var/www/html/.
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP

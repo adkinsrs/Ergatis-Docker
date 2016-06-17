@@ -11,9 +11,9 @@ include_once('header.php');
 			<div id='content_container'>
 */  ?>
                 <?php
-                    include_once('prok_pipeline_step2_submit.php');
+                    include_once('lgt_pipeline_step1_submit.php');
 					if ($errFlag == 0) {
-						$pipeline_url = `/usr/bin/perl ./perl/run_prok_pipeline.pl --layout {$formValuesArr['layout_file']['default']} --config {$formValuesArr['config_file']['default']} --repository_root {$formValuesArr['rep_root']['default']}`;
+						$pipeline_url = `/usr/bin/perl ./perl/run__pipeline.pl --layout {$formValuesArr['layout_file']['default']} --config {$formValuesArr['config_file']['default']} --repository_root {$formValuesArr['rep_root']['default']}`;
 
 						if (preg_match('/pipeline_id/',$pipeline_url,$matches)) {
 							$res = array();

@@ -1,6 +1,6 @@
 <?php
 $page_title = 'Pipeline Builder - Step 1';
-$extra_head_tags = '<script type="text/javascript" src="./js/ProkPipe1.js"></script>';
+$extra_head_tags = '<script type="text/javascript" src="./js/MiscFunctions.js"></script>';
 include_once('header.php');
 /*
 <html>
@@ -8,81 +8,64 @@ include_once('header.php');
 	</head>
 	<body>
 		<div id='page_container'>
-			
+
 			<div id='content_container'>
 */  ?>
-				<form id='prok_pipeline_step1_form' name='prok_pipeline_step1_form' method='post' action='prok_pipeline_step2.php'>
+				<form id='lgt_pipeline_step1_form' name='lgt_pipeline_step1_form' method='post' action='lgt_pipeline_complete.php'>
 					<br>
-					<h2>STEP 1 : Configure the prokaryotic pipeline<sup><a href='./help.php#form' target='_blank'>?</a></sup></h2>
+					<h2>STEP 1 : Configure the LGTSeek pipeline<sup><a href='./help.php#form' target='_blank'>?</a></sup></h2>
 					<h3>Select the components to be included in the pipeline from the following list : (Default selections are shown)</h3>
 					<table cellspacing="10">
 						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cpseudomolecule" onclick="CheckSubmit()"></td> 
-							<td>Create pseudomolecule</td>
-							<td></td>
-						</tr>
-						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cgenecalls" onclick="CheckSubmit(); SelectedGenecalls()"></td>
-							<td>Annotate on established genecalls</td>
-							<td></td>
-						</tr>
-						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="crna" checked onclick="CheckSubmit()"></td>
-							<td>Predict RNA [tRNA and rRNA]</td>
-							<td></td>
-						</tr>
-						<tr>
-							<td valign="top"><input type="checkbox" name="selections[]" id="selections" value="cgene" checked onclick="CheckSubmit()"></td>
+							<td valign="top"><input type="checkbox" name="selections[]" id="selections" value="calign" checked onclick="CheckSubmit(); ToggleRefTextFields()"></td>
 							<td>
-								Gene Prediction Algorithm. Select one
+								Which references should be used to look for LGT?
 								<table cellspacing="10">
 									<tr>
-										<td><input type="radio" name="rgene_algo" value="glimmer" checked></td>
-										<td>Glimmer</td>
+										<td><input type="radio" name="rgene_algo" value="cdonor" checked></td>
+										<td>Donor reference only</td>
 									</tr>
 									<tr>
-										<td><input type="radio" name="rgene_algo" value="prodigal"></td>
-										<td>Prodigal</td>
+										<td><input type="radio" name="rgene_algo" value="chost"></td>
+										<td>Host reference only</td>
+									</tr>
+									<tr>
+										<td><input type="radio" name="rgene_algo" value="cboth"></td>
+										<td>Both donor and host</td>
 									</tr>
 								</table>
 							</td>
 							<td></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cannotate" checked onclick="CheckSubmit()"></td>
-							<td>Annotate</td>
-							<td></td>
+							<td>DONOR REFERENCE</td>
+							<td><input type='text' name="tdonor"></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cload_db" onclick="CheckSubmit()"></td>
-							<td>Load into Database</td>
-							<td></td>
+							<td>HOST REFERENCE</td>
+							<td><input type='text' name="thost"></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cmulti" checked disabled onclick="CheckSubmit()"></tdd>
-							<td>Multisequence Output (reduces number of files created)</td>
-							<td></td>
+							<td>REFSEQ REFERENCE</td>
+							<td><input type='text' name="trefseq"></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cipd" onclick="CheckSubmit()"></td>
-							<td>Connect to IPD Study Stage</td>
-							<td></td>
+							<td>SRA ID</td>
+							<td><input type='text' name="tsra"></td>
 						</tr>
 						<tr>
-							<td><input type="checkbox" name="selections[]" id="selections" value="cbatch" onclick="CheckSubmit();SendToBatch()"></td>
-							<td>Create multiple pipelines</td>
-							<td></td>
-						</tr>								
+							<td>REPOSITORY_ROOT</td>
+							<td><input type='text' name="trepo"></td>
+						</tr>
 					</table>
 					<br>
 						<tr>
-							<td><input type="button" name="bselect_all" onclick="SelectUnselectAll()" value="Select All"></td>
 							<td><input type="reset" name="breset" onclick="ChangeLabel()" value="Reset"></td>
 							<td><input type="submit" name="bsubmit" value="Submit"></td>
 						</tr>
 					</table>
 				</form>
-				
+
 <?php
 include_once('footer.php');
 /*			</div>
