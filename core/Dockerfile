@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	default-jdk\
 	dh-make-perl \
+	vim \
 	zip \
 	zlib1g-dev \
 	&& apt-get clean autoclean \
@@ -107,6 +108,9 @@ ENV PERL5LIB=/opt/ergatis/lib/perl5
 
 #TODO: Add htdocs site - minus specific pipeline-building UI
 RUN mkdir /var/www/html/ergatis
-COPY htdocs/* /var/www/html/ergatis/.
+COPY htdocs/* /var/www/html/ergatis/
 
 COPY ergatis.ini /opt/ergatis/.
+
+# Lastly, set working directory to root directory
+WORKDIR /

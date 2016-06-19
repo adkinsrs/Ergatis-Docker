@@ -13,8 +13,8 @@ ARG PROJECT=lgtseek
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-ARG BWA_VERSION=0.7.15
-ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
+#ARG BWA_VERSION=0.7.15
+#ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
 ARG NCBI_BLAST_VERSION=2.3.0
 ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
@@ -28,8 +28,8 @@ ARG PICARD_DOWNLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICAR
 ARG PRINSEQ_VERSION=0.20.4
 ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 
-ARG SAMTOOLS_VERSION=1.3.1
-ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
+#ARG SAMTOOLS_VERSION=1.3.1
+#ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
 ARG SRA_VERSION=2.6.3
 ARG SRA_DOWLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
@@ -37,14 +37,14 @@ ARG SRA_DOWLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/bwa
 
-RUN mkdir -p /usr/src/bwa
-WORKDIR /usr/src/bwa
+#RUN mkdir -p /usr/src/bwa
+#WORKDIR /usr/src/bwa
 
-RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
-	&& tar --strip-components=1 -xvf bwa.tar.gz -C /usr/src/bwa \
-	&& rm bwa.tar.gz \
-	&& make all \
-	&& ln -s /usr/src/bwa /opt/bwa
+#RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
+#	&& tar --strip-components=1 -xvf bwa.tar.gz -C /usr/src/bwa \
+#	&& rm bwa.tar.gz \
+#	&& make all \
+#	&& ln -s /usr/src/bwa /opt/bwa
 
 #--------------------------------------------------------------------------------
 # HTSLIB -- install in /opt/htslib (required for Samtools)
@@ -63,10 +63,10 @@ RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
 #--------------------------------------------------------------------------------
 # SAMTOOLS -- install in /opt/samtools
 
-RUN apt-get update && apt-get install -y \
-	samtools \
-	&& apt-get clean autoclean \
-	&& apt-get autoremove -y
+#RUN apt-get update && apt-get install -y \
+#	samtools \
+#	&& apt-get clean autoclean \
+#	&& apt-get autoremove -y
 
 #RUN mkdir -p /usr/src/samtools
 #WORKDIR /usr/src/samtools
