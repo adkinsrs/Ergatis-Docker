@@ -7,7 +7,7 @@ FROM ubuntu:trusty
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
-EXPOSE 8080
+EXPOSE 80
 
 #--------------------------------------------------------------------------------
 # SOFTWARE
@@ -106,11 +106,12 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 RUN mkdir -p /opt/ergatis
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-#TODO: Add htdocs site - minus specific pipeline-building UI
 RUN mkdir /var/www/html/ergatis
 COPY htdocs/* /var/www/html/ergatis/
 
 COPY ergatis.ini /opt/ergatis/.
+# Add the ergatis apache conf
+COPY 000-default.conf /etc/apache2/sites-enabled/.
 
 # Lastly, set working directory to root directory
 WORKDIR /
