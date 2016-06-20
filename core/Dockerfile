@@ -107,12 +107,14 @@ RUN mkdir -p /opt/ergatis
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
 RUN mkdir /var/www/html/ergatis
-COPY htdocs/* /var/www/html/ergatis/
+COPY htdocs/ /var/www/html/ergatis/
 
 COPY ergatis.ini /opt/ergatis/.
 # Add the ergatis apache conf
 COPY 000-default.conf /etc/apache2/sites-enabled/.
 COPY ergatis.conf /etc/apache2/conf-enabled/.
+RUN service apache2 start
+RUN cp /etc/apache2/mods-available/cgi* /etc/apache2/mods-enabled/
 
 # Lastly, set working directory to root directory
 WORKDIR /
