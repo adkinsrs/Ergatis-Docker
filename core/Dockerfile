@@ -112,6 +112,7 @@ COPY htdocs/* /var/www/html/ergatis/
 COPY ergatis.ini /opt/ergatis/.
 # Add the ergatis apache conf
 COPY 000-default.conf /etc/apache2/sites-enabled/.
+COPY ergatis.conf /etc/apache2/conf-enabled/.
 
 # Lastly, set working directory to root directory
 WORKDIR /
