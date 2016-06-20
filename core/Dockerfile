@@ -63,7 +63,7 @@ RUN apt-get update && apt-get install -y \
 	&& apt-get clean autoclean \
 	&& apt-get autoremove -y
 
-COPY lib/lib*.deb /tmp/
+COPY deb/lib*.deb /tmp/
 
 RUN dpkg -i \
 	/tmp/libfile-mirror-perl_0.10-1_all.deb \
@@ -103,18 +103,24 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
 
-RUN mkdir -p /opt/ergatis
+# Set up lib directory
+RUN mkdir -p /opt/ergatis/lib/
+COPY lib/ /opt/ergatis/lib/
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
+# Set up site 
 RUN mkdir /var/www/html/ergatis
 COPY htdocs/ /var/www/html/ergatis/
 
-COPY ergatis.ini /opt/ergatis/.
-# Add the ergatis apache conf
+COPY ergatis.ini /var/www/html/ergatis/cgi
+
+# Set up apache
 COPY 000-default.conf /etc/apache2/sites-enabled/.
 COPY ergatis.conf /etc/apache2/conf-enabled/.
-RUN service apache2 start
-RUN cp /etc/apache2/mods-available/cgi* /etc/apache2/mods-enabled/
+RUN a2enmod cgid
+#CMD service apache2 start
 
 # Lastly, set working directory to root directory
 WORKDIR /
+# ... and start apache
+CMD /usr/sbin/apachectl -D FOREGROUND

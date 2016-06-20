@@ -171,6 +171,8 @@ RUN mkdir -p /opt/projects/$PROJECT \
 	&& touch /opt/projects/$PROJECT/workflow/project_id_repository/valid_id_repository \
     && cp /tmp/project.config /opt/projects/$PROJECT/workflow/.
 
+# Have ergatis.ini point to new project so we can quickly access it
+RUN sed /CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
 #--------------------------------------------------------------------------------
 # Scripts -- Any addition post-setup scripts that need to be run
 
