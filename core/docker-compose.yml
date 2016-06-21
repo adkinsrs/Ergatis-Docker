@@ -1,0 +1,8 @@
+version: '0.1'
+web: 
+  image: apache
+  expose: 80
+  links: ergatis
+
+ergatis:
+  image: adkinsrs/ergatis

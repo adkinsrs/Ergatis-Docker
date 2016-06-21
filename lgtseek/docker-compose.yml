@@ -1,0 +1,6 @@
+version: '0.1'
+pipeline:
+  build: .
+  extends:
+    file: ../core/docker-compose.yml
+    service:  ergatis
