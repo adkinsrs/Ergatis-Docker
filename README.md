@@ -42,3 +42,4 @@ where <CONTAINER ID>  is the alphanumeric ID obtained from the earlier `docker p
 * Eventually will need to tag the Ergatis Docker image as a release version rather than use the "latest" tag.
 * Currently the Ergatis site can be loaded, but I have not done much in the way of bug testing.  So far, I've been rather lax in determining CPAN mod dependencies that need to be installed.  This will become more imperative as I start working more on the images of individual pipelines.
 * It may be a good idea to tell users to link to the Ergatis homepage, and then have the individual pipeline builder UIs be accessible from there via a link somewhere on the home page.  To that extent, it may be a good idea to make the Ergatis page localhost:8080 instead of localhost:8080/ergatis
+* Convert each pipeline microservice into it's own stack via docker-compose.  This would allow less hassle in setting up things like Apache2 and MySQL in a single Dockerfile.
