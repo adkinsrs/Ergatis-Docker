@@ -18,17 +18,23 @@ For both the Ergatis and pipeline images, the "latest" tag will essentially be t
 These will use the LGTSeek pipeline as an example.
 
 To run a docker container:
-`docker run -p 8080:80 -d adkinsrs/lgtseek`
+```
+docker run -p 8080:80 -d adkinsrs/lgtseek
+```
 Note that the container will run in detached mode (-d option), meaning it will run in the background
 
 Verify the docker container is up by running:
-`docker ps`
+```
+docker ps
+```
 This should give you valuable information such as the container ID, time it has been running, among other things
 
 In your internet browser, you can access the Ergatis homepage by navigating to [http://localhost:8080/ergatis/](http://localhost:8080/ergatis/).
 
 To stop the container, and free up valuable CPU and memory resources, run the following:
-`docker stop <CONTAINER ID>`
+```
+docker stop <CONTAINER ID>
+```
 where <CONTAINER ID>  is the alphanumeric ID obtained from the earlier `docker ps` command
 
 ## Future improvements (or TODOs)
