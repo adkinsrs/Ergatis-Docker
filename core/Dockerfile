@@ -18,8 +18,7 @@ ARG BSML_DOWNLOAD_URL=http://sourceforge.net/projects/bsml/files/bsml/bsml-${BSM
 ARG ERGATIS_VERSION=v2r19b4
 ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/${ERGATIS_VERSION}.tar.gz
 
-ARG WORKFLOW_VERSION=3.1.5
-ARG WORKFLOW_DOWNLOAD_URL=http://sourceforge.net/projects/tigr-workflow/files/tigr-workflow/wf-${WORKFLOW_VERSION}.tar.gz
+
 
 #--------------------------------------------------------------------------------
 # BASICS
@@ -72,21 +71,6 @@ RUN dpkg -i \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb
 
 #--------------------------------------------------------------------------------
-# WORKFLOW -- install in /opt/workflow
-
-RUN mkdir /usr/src/workflow
-WORKDIR /usr/src/workflow
-
-COPY workflow.deploy.answers /tmp/.
-
-RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
-	&& tar -xvf workflow.tar.gz -C /usr/src/workflow \
-	&& rm workflow.tar.gz \
-	&& mkdir -p /opt/workflow/server-conf \
-	&& chmod 777 /opt/workflow/server-conf \
-	&& ./deploy.sh < /tmp/workflow.deploy.answers
-
-#--------------------------------------------------------------------------------
 # SCRATCH
 
 RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
@@ -108,7 +92,7 @@ RUN mkdir -p /opt/ergatis/lib/
 COPY lib/ /opt/ergatis/lib/
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-# Set up site 
+# Set up site
 RUN mkdir /var/www/html/ergatis
 COPY htdocs/ /var/www/html/ergatis/
 

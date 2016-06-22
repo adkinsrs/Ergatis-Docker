@@ -1,6 +1,14 @@
 version: '0.1'
-pipeline:
-  build: .
-  extends:
-    file: ../core/docker-compose.yml
-    service:  ergatis
+
+ergatis:
+  image: adkinsrs/lgtseek
+  depends_on: workflow
+  links: workflow
+
+web:
+  image: apache
+  expose: 80
+  links: ergatis
+
+workflow:
+  image: adkinsrs/workflow

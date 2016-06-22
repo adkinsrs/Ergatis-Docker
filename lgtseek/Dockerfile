@@ -16,8 +16,8 @@ ARG PROJECT=lgtseek
 #ARG BWA_VERSION=0.7.15
 #ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
-ARG NCBI_BLAST_VERSION=2.3.0
-ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-${NCBI_BLAST_VERSION}+-x64-linux.tar.gz
+ARG NCBI_BLAST_VERSION=2.2.9
+ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/legacy/${NCBI_BLAST_VERSION}/blast-${NCBI_BLAST_VERSION}-amd64-linux.tar.gz
 
 ARG HTSLIB_VERSION=1.3.1
 ARG HTSLIB_DOWNLOAD_URL=https://github.com/samtools/htslib/archive/${HTSLIB_VERSION}.tar.gz
@@ -32,7 +32,7 @@ ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalo
 #ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
 ARG SRA_VERSION=2.6.3
-ARG SRA_DOWLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
+ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
 
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/bwa
@@ -94,14 +94,14 @@ RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
 	&& rm picard.tar.gz
 
 # Build the distribution jar, clean up everything else
-RUN ant clean all && \
-    mv dist/picard.jar picard.jar && \
-    mv src/scripts/picard/docker_helper.sh docker_helper.sh && \
-    ant clean && \
-    rm -rf htsjdk && \
-    rm -rf src && \
-    rm -rf lib && \
-    rm build.xml
+#RUN ant clean all && \
+#    mv dist/picard.jar picard.jar && \
+#    mv src/scripts/picard/docker_helper.sh docker_helper.sh && \
+#    ant clean && \
+#    rm -rf htsjdk && \
+#    rm -rf src && \
+#    rm -rf lib && \
+#    rm build.xml
 
 #	&& ln -s /usr/src/picard_tools /opt/picard_tools
 
@@ -124,10 +124,11 @@ WORKDIR /usr/src/sratoolkit
 
 RUN curl -SL $SRA_DOWNLOAD_URL -o sra.tar.gz \
 	&& tar --strip-components=1 -xvf sra.tar.gz -C /usr/src/sratoolkit \
-	&& rm sra.tar.gz \
-	&& sed -i -e 's/..CURDIR./\/opt\/sratoolkit/' Makefile \
-	&& make \
-	&& make install
+	&& rm sra.tar.gz 
+#	&& ./configure --prefix=/opt/sratoolkit
+#	&& sed -i -e 's/..CURDIR./\/usr\/src\/sratoolkit/' Makefile \
+#	&& make \
+#	&& make install
 
 #--------------------------------------------------------------------------------
 # NCBI_BLAST -- install in /opt/ncbi_blast
@@ -137,10 +138,10 @@ WORKDIR /usr/src/ncbi_blast
 
 RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
 	&& tar --strip-components=1 -xvf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
-	&& rm ncbi_blast.tar.gz \
-	&& sed -i -e 's/..HOME./\/opt\/ncbi_blast/' Makefile \
-	&& make \
-	&& make install
+	&& rm ncbi_blast.tar.gz 
+#	&& sed -i -e 's/..HOME./\/usr\/src\/ncbi_blast/' Makefile \
+#	&& make \
+#	&& make install
 
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP -- Setting up things related to this particular pipeline
@@ -172,7 +173,7 @@ RUN mkdir -p /opt/projects/$PROJECT \
     && cp /tmp/project.config /opt/projects/$PROJECT/workflow/.
 
 # Have ergatis.ini point to new project so we can quickly access it
-RUN sed /CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
+RUN sed s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
 #--------------------------------------------------------------------------------
 # Scripts -- Any addition post-setup scripts that need to be run
 
