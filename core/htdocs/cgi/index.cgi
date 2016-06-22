@@ -16,7 +16,7 @@ print $q->header( -type => 'text/html' );
 
 umask(0000);
 
-## this toggle will force a rescan of the pipelines rather than pulling from 
+## this toggle will force a rescan of the pipelines rather than pulling from
 ##  the storable object.
 my $update_cache = $q->param('update_cache') || 0;
 
@@ -30,19 +30,22 @@ my $ergatis_cfg = new Ergatis::ConfigFile( -file => "ergatis.ini" );
 ## build the project list
 my $registered_projects = [];
 for my $label ( sort $ergatis_cfg->Parameters('projects') ) {
-    push @$registered_projects, { 
+    push @$registered_projects, {
                                     label => $label,
                                     repository_root => $ergatis_cfg->val('projects', $label),
                                 };
 }
 
-$tmpl->param( REGISTERED_PROJECTS => $registered_projects );
-$tmpl->param( UPDATE_CACHE        => $update_cache );
-$tmpl->param( DEFAULT_PROJECT_ROOT => $ergatis_cfg->val( 'paths', 'default_project_root') || '' );
-$tmpl->param( QUICK_LINKS         => &get_quick_links($ergatis_cfg) );
-$tmpl->param( SUBMENU_LINKS       => [
-                                        { label => 'update cache', is_last => 1, url => './index.cgi?update_cache=1' },
+my $docker_hostname = `hostname`;
+
+$tmpl->param( REGISTERED_PROJECTS               => $registered_projects );
+$tmpl->param( UPDATE_CACHE                      => $update_cache );
+$tmpl->param( DEFAULT_PROJECT_ROOT              => $ergatis_cfg->val( 'paths', 'default_project_root') || '' );
+$tmpl->param( QUICK_LINKS                       => &get_quick_links($ergatis_cfg) );
+$tmpl->param( SUBMENU_LINKS                     => [
+                                        { label => 'update cache', is_last => 1,
+                                            url => './index.cgi?update_cache=1' },
                                      ] );
-
+$tmpl->param( SHOW_HOSTNAME                     => 1 );
+$tmpl->param( DOCKER                            => $docker_hostname );
 print $tmpl->output;
-

@@ -21,6 +21,12 @@
             <span id='page_title'>ergatis</span>
             <span id='page_slogan'>workflow creation and monitoring interface</span>
         </div>
+        <TMPL_IF NAME=SHOW_HOSTNAME>
+            <br>
+            <div id='docker_container'>
+                <span id='page_slogan'> running in Docker container TMPL_VAR NAME=DOCKER</span>
+            </div>
+        </TMPL_IF>
     </div>
 
     <div id='primary_nav_container'>

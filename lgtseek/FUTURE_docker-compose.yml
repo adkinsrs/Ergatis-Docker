@@ -1,9 +1,15 @@
 version: '0.1'
 
+db:
+  image: mongo
+
 ergatis:
   image: adkinsrs/lgtseek
   depends_on: workflow
-  links: workflow
+  links: db, workflow
+
+swarm:
+  image: swarm
 
 web:
   image: apache

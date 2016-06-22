@@ -18,8 +18,6 @@ ARG BSML_DOWNLOAD_URL=http://sourceforge.net/projects/bsml/files/bsml/bsml-${BSM
 ARG ERGATIS_VERSION=v2r19b4
 ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/${ERGATIS_VERSION}.tar.gz
 
-
-
 #--------------------------------------------------------------------------------
 # BASICS
 
