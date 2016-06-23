@@ -86,7 +86,8 @@ RUN mkdir -p /usr/src/picard_tools
 WORKDIR /usr/src/picard_tools
 
 # Clone out htsjdk. First turn off git ssl verification
-RUN git config --global http.sslVerify false && git clone https://github.com/samtools/htsjdk.git
+RUN git config --global http.sslVerify false \
+	&& git clone https://github.com/samtools/htsjdk.git
 # Build from gradlew which is included
 
 RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
