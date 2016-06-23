@@ -179,3 +179,7 @@ RUN sed s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
 
 RUN mkdir -p /opt/scripts
 WORKDIR /opt/scripts
+
+# Lastly change to root directory 
+CMD ["/bin/bash"]
+WORKDIR /

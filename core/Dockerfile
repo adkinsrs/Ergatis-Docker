@@ -105,4 +105,4 @@ RUN a2enmod cgid
 # Lastly, set working directory to root directory
 WORKDIR /
 # ... and start apache
-CMD /usr/sbin/apachectl -D FOREGROUND
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
