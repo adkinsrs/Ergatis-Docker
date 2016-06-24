@@ -3,7 +3,7 @@
 # Based on Ubuntu
 ############################################################
 
-FROM ubuntu:trusty
+FROM adkinsrs/workflow
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 

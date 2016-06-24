@@ -3,7 +3,7 @@
 # Based on Alpine (minimal Linux installation)
 ############################################################
 
-FROM alpine
+FROM ubuntu:trusty
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
@@ -13,11 +13,10 @@ ARG WORKFLOW_DOWNLOAD_URL=http://sourceforge.net/projects/tigr-workflow/files/ti
 #--------------------------------------------------------------------------------
 # BASICS
 
-RUN apk add --update --no-cache \
-    bash \
+RUN apt-get update && apt-get install -y \
     curl \
-    perl \
-    && rm -rf /var/cache/apk/*
+    && apt-get clean autoclean \
+	&& apt-get autoremove -y
 
 #--------------------------------------------------------------------------------
 # WORKFLOW -- install in /opt/workflow

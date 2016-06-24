@@ -34,7 +34,7 @@ B<--help,-h>
 =head1  DESCRIPTION
 
  DESCRIPTION
-
+ 
 =head1  INPUT
 
     Describe the input
@@ -119,7 +119,7 @@ sub main {
 	# Write the pipeline.layout file
 	&write_pipeline_layout( $layout_writer, sub {
 		my ($writer) = @_;
-   		&write_include($writer, $pipelines->{'sra'}) if( $included_subpipelines{'sra'} );
+   		&write_include($writer, $pipelines->{'sra'}) if( $included_subpipelines{'sra'} );		
 		# Use the right layout file if this run is donor-only, or both donor/host alignment
 		if ($donor_only) {
    			&write_include($writer, $pipelines->{'indexing'}, "pipeline.donor_only.layout") if( $included_subpipelines{'indexing'} );
@@ -128,8 +128,8 @@ sub main {
    			&write_include($writer, $pipelines->{'indexing'}, "pipeline.host_only.layout") if( $included_subpipelines{'indexing'} );
    			&write_include($writer, $pipelines->{'lgtseek'}, "pipeline.host_only.layout") if( $included_subpipelines{'lgtseek'} );
 		} else {
-   			&write_include($writer, $pipelines->{'indexing'}) if( $included_subpipelines{'indexing'} );
-   			&write_include($writer, $pipelines->{'lgtseek'}) if( $included_subpipelines{'lgtseek'} );
+   			&write_include($writer, $pipelines->{'indexing'}) if( $included_subpipelines{'indexing'} );		
+   			&write_include($writer, $pipelines->{'lgtseek'}) if( $included_subpipelines{'lgtseek'} );		
 		}
 	});
 
@@ -165,7 +165,7 @@ sub main {
 	$config{"global"}->{'$;SRA_RUN_ID$;'} = $options{sra_id};
 	# Default use case (good donor and good host), we just want two specific list files.  For donor and host-only cases, we want other specific list files
 	$config{"lgt_bwa_post_process default"}->{'$;SKIP_WF_COMMAND$;'} = 'create single map BAM file list,create no map BAM file list';
-
+	
 	unless ($donor_only) {
 	# Only add host-relevant info to config if we are aligning to a host
 		if ($options{host_reference} =~ /list$/) {
@@ -178,7 +178,7 @@ sub main {
 		$config{"lgt_bwa donor"}->{'$;QUERY_FILE$;'} = '$;REPOSITORY_ROOT$;/output_repository/sra2fastq/$;PIPELINEID$;_default/sra2fastq.list';
 		$config{"lgt_bwa_post_process default"}->{'$;RECIPIENT_FILE_LIST$;'} = '';
 		$config{"lgt_bwa_post_process default"}->{'$;SKIP_WF_COMMAND$;'} = 'create LGT BAM file list,create microbiome BAM file list,create no map BAM file list';
-		$config{"filter_dups_lc_seqs lgt"}->{'$;INPUT_FILE$;'} = '$;REPOSITORY_ROOT$;/output_repository/lgt_bwa_post_process/$;PIPELINEID$;_default/post_process.single_map.bam.list';
+		$config{"filter_dups_lc_seqs lgt"}->{'$;INPUT_FILE_LIST$;'} = '$;REPOSITORY_ROOT$;/output_repository/lgt_bwa_post_process/$;PIPELINEID$;_default/lgt_bwa_post_process.single_map.bam.list';
 	}
 
 	unless ($host_only) {
@@ -193,16 +193,16 @@ sub main {
 		$config{"lgt_bwa recipient"}->{'$;QUERY_FILE$;'} = '$;REPOSITORY_ROOT$;/output_repository/sra2fastq/$;PIPELINEID$;_default/sra2fastq.list';
 		$config{"lgt_bwa_post_process default"}->{'$;DONOR_FILE_LIST$;'} = '';
 		$config{"lgt_bwa_post_process default"}->{'$;SKIP_WF_COMMAND$;'} = 'create LGT BAM file list,create microbiome BAM file list';
-		$config{"filter_dups_lc_seqs lgt"}->{'$;INPUT_FILE$;'} = '$;REPOSITORY_ROOT$;/output_repository/lgt_bwa_post_process/$;PIPELINEID$;_default/post_process.single_map.bam.list';
-		$config{"filter_dups_lc_seqs mb"}->{'$;INPUT_FILE$;'} = '$;REPOSITORY_ROOT$;/output_repository/lgt_bwa_post_process/$;PIPELINEID$;_default/post_process.no_map.bam.list';
+		$config{"filter_dups_lc_seqs lgt"}->{'$;INPUT_FILE_LIST$;'} = '$;REPOSITORY_ROOT$;/output_repository/lgt_bwa_post_process/$;PIPELINEID$;_default/lgt_bwa_post_process.single_map.bam.list';
+		$config{"filter_dups_lc_seqs mb"}->{'$;INPUT_FILE_LIST$;'} = '$;REPOSITORY_ROOT$;/output_repository/lgt_bwa_post_process/$;PIPELINEID$;_default/lgt_bwa_post_process.no_map.bam.list';
 	}
 
 	# open config file for writing
 	open( my $pcfh, "> $pipeline_config") or &_log($ERROR, "Could not open $pipeline_config for writing: $!");
-
+	
 	# Write the config
 	&write_config( \%config, $pcfh );
-
+	
 	# close the file handles
 	close($plfh);
 	close($pcfh);
@@ -306,7 +306,7 @@ sub check_options {
 
    	$debug = $opts->{'debug'} if( $opts->{'debug'} );
 
-   	foreach my $req ( qw(sra_id donor_reference refseq_reference) ) {
+   	foreach my $req ( qw(sra_id refseq_reference) ) {
        &_log($ERROR, "Option $req is required") unless( $opts->{$req} );
    	}
 
