@@ -127,7 +127,7 @@ WORKDIR /usr/src/sratoolkit
 
 RUN curl -SL $SRA_DOWNLOAD_URL -o sra.tar.gz \
 	&& tar --strip-components=1 -xvf sra.tar.gz -C /usr/src/sratoolkit \
-	&& rm sra.tar.gz 
+	&& rm sra.tar.gz
 #	&& ./configure --prefix=/opt/sratoolkit
 #	&& sed -i -e 's/..CURDIR./\/usr\/src\/sratoolkit/' Makefile \
 #	&& make \
@@ -141,23 +141,10 @@ WORKDIR /usr/src/ncbi_blast
 
 RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
 	&& tar --strip-components=1 -xvf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
-	&& rm ncbi_blast.tar.gz 
+	&& rm ncbi_blast.tar.gz
 #	&& sed -i -e 's/..HOME./\/usr\/src\/ncbi_blast/' Makefile \
 #	&& make \
 #	&& make install
-
-#--------------------------------------------------------------------------------
-# ERGATIS SETUP -- Setting up things related to this particular pipeline
-
-COPY bin /opt/ergatis/.
-COPY docs /opt/ergatis/.
-COPY lib /opt/ergatis/.
-COPY pipeline_templates /opt/ergatis/.
-COPY software.config /opt/ergatis/.
-
-#--------------------------------------------------------------------------------
-# PIPELINE BUILDER SETUP -- Setting up the pipeline creation UI site
-COPY pipeline_builder /var/www/html/.
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP
@@ -180,10 +167,8 @@ RUN sed -i.bak s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
 #--------------------------------------------------------------------------------
 # Scripts -- Any addition post-setup scripts that need to be run
 
-RUN mkdir -p /opt/scripts
-WORKDIR /opt/scripts
 
-# Lastly change to root directory 
+# Lastly change to root directory
 #CMD ["/bin/bash"]
 WORKDIR /
 # ... and start apache

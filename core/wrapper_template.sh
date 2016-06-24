@@ -6,7 +6,7 @@ export SCHEMA_DOCS_DIR
 fi
 if [ -z "$WORKFLOW_WRAPPERS_DIR" ]
 then
-    WORKFLOW_WRAPPERS_DIR=/usr/local/projects/ergatis/package-nightly//bin
+    WORKFLOW_WRAPPERS_DIR=/opt/ergatis/bin
 export WORKFLOW_WRAPPERS_DIR
 fi
 if [ -z "$WORKFLOW_DOCS_DIR" ]
@@ -27,10 +27,10 @@ export LANG
 LC_ALL=C
 export LC_ALL
 
-PERL_MOD_DIR=/usr/local/projects/ergatis/package-nightly//lib/5.8.8
+PERL_MOD_DIR=/opt/ergatis/lib/perl5
 export PERL_MOD_DIR
 
-export PERL5LIB=/usr/local/projects/ergatis/package-nightly//lib/perl5/
+export PERL5LIB=/opt/ergatis/lib/perl5/
 
     /usr/bin/perl /opt/ergatis/bin/###SCRIPT_NAME###.pl "$@"
 
