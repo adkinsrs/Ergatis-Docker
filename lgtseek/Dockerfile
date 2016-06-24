@@ -7,6 +7,8 @@ FROM adkinsrs/ergatis
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
+EXPOSE 80
+
 # The project name
 ARG PROJECT=lgtseek
 
@@ -155,7 +157,7 @@ COPY software.config /opt/ergatis/.
 
 #--------------------------------------------------------------------------------
 # PIPELINE BUILDER SETUP -- Setting up the pipeline creation UI site
-COPY lgtbuilder /var/www/html/.
+COPY pipeline_builder /var/www/html/.
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP
@@ -174,7 +176,7 @@ RUN mkdir -p /opt/projects/$PROJECT \
     && cp /tmp/project.config /opt/projects/$PROJECT/workflow/.
 
 # Have ergatis.ini point to new project so we can quickly access it
-RUN sed s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
+RUN sed -i.bak s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
 #--------------------------------------------------------------------------------
 # Scripts -- Any addition post-setup scripts that need to be run
 
@@ -182,5 +184,7 @@ RUN mkdir -p /opt/scripts
 WORKDIR /opt/scripts
 
 # Lastly change to root directory 
-CMD ["/bin/bash"]
+#CMD ["/bin/bash"]
 WORKDIR /
+# ... and start apache
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]

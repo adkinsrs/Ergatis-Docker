@@ -1,4 +1,4 @@
-version: '0.1'
+version: '2'
 
 db:
   image: mongo
@@ -6,7 +6,9 @@ db:
 ergatis:
   image: adkinsrs/lgtseek
   depends_on: workflow
-  links: db, workflow
+  links: 
+    - db, 
+    - workflow
 
 swarm:
   image: swarm

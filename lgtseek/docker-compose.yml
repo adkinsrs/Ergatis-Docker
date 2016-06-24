@@ -1,0 +1,23 @@
+version: '2'
+services:
+  #db:
+  #  image: mongo
+
+  ergatis:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./pipeline_builder:/var/www/html/pipeline_builder
+      - ../core/htdocs:/var/www/html/ergatis
+
+  #swarm:
+  #  image: swarm
+
+  #web:
+  #  image: apache
+  #  expose: 80
+  #  links: ergatis
+
+  #workflow:
+  #  image: adkinsrs/workflow
