@@ -30,9 +30,9 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	default-jdk\
 	dh-make-perl \
-	php5 \
+	git \
 	libapache2-mod-php5 \
-	php5-mcrypt \
+	php5 \
 	vim \
 	zip \
 	zlib1g-dev \
@@ -109,6 +109,7 @@ RUN a2enmod php5
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts
 COPY wrapper_template.sh /opt/scripts
+COPY substitute_in_wrapper.sh /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /
@@ -123,12 +124,15 @@ ONBUILD RUN mkdir /var/www/html/pipeline_builder
 ONBUILD COPY pipeline_builder/ /var/www/html/pipeline_builder/
 
 # Set up Ergatis application area
-ONBUILD COPY bin /opt/ergatis/.
-ONBUILD COPY docs /opt/ergatis/.
-ONBUILD COPY lib /opt/ergatis/.
-ONBUILD COPY pipeline_templates /opt/ergatis/.
+ONBUILD RUN mkdir /opt/ergatis/bin
+ONBUILD COPY bin/ /opt/ergatis/bin/
+ONBUILD RUN mkdir /opt/ergatis/docs
+ONBUILD COPY docs/ /opt/ergatis/docs/
+ONBUILD COPY lib/perl5 /opt/ergatis/lib/perl5/
+ONBUILD RUN mkdir /opt/ergatis/pipeline_templates
+ONBUILD COPY pipeline_templates/ /opt/ergatis/pipeline_templates/
 ONBUILD COPY software.config /opt/ergatis/.
 
 # Build wrapper scripts for each perl script in /opt/ergatis/bin
 ONBUILD COPY exec_scripts.txt /tmp/.
-ONBUILD RUN substitute_in_wrapper.sh
+ONBUILD RUN /opt/scripts/substitute_in_wrapper.sh

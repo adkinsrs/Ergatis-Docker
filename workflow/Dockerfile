@@ -33,7 +33,7 @@ RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
 	&& chmod 777 /opt/workflow/server-conf \
 	&& ./deploy.sh < /tmp/workflow.deploy.answers
 
-#ENTRYPOINT [/opt/workflow/RunWorkflow]
+#ENTRYPOINT [/opt/workflow/RunWorkflow]	# This will break Ergatis if Ergatis inherits it
 CMD ["/bin/bash"]
 
 # Lastly, set working directory to root directory
