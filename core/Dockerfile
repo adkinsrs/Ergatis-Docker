@@ -22,13 +22,11 @@ ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/${ERGATIS_VER
 # BASICS
 
 RUN apt-get update && apt-get install -y \
-	ant \
 	apache2 \
 	autoconf \
 	build-essential \
 	cpanminus \
 	curl \
-	default-jdk\
 	dh-make-perl \
 	git \
 	libapache2-mod-php5 \
@@ -70,6 +68,9 @@ RUN dpkg -i \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb \
   && rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb
+
+# Make 'packages' dir.  Installs will build into there or will be symlinked there
+RUN mkdir -p /opt/packages
 
 #--------------------------------------------------------------------------------
 # SCRATCH

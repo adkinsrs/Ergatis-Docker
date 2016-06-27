@@ -15,6 +15,7 @@ ARG PROJECT=lgtseek
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
+# Installed via BioPerl
 #ARG BWA_VERSION=0.7.15
 #ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
@@ -30,14 +31,33 @@ ARG PICARD_DOWNLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICAR
 ARG PRINSEQ_VERSION=0.20.4
 ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 
+# Installed via BioPerl
 #ARG SAMTOOLS_VERSION=1.3.1
 #ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
 ARG SRA_VERSION=2.6.3
 ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
 
+### OpenJDK-8-JDK is natively not available for Ubuntu 14.04 so we need a workaround here
+# Install the python script required for "add-apt-repository"
+RUN apt-get update && apt-get install -y software-properties-common
+# Setup the openjdk 8 repo
+RUN add-apt-repository ppa:openjdk-r/ppa
+# Install java8
+RUN apt-get update && apt-get install -y openjdk-8-jdk
+
+# Lets install the other stuff now
+RUN apt-get update && apt-get install -y \
+	ant \
+	libmagic-dev \
+	libxml2 \
+	&& apt-get clean autoclean \
+	&& apt-get autoremove -y
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
 #--------------------------------------------------------------------------------
-# BWA -- install in /opt/bwa
+# BWA -- install in /opt/packages/bwa
 
 #RUN mkdir -p /usr/src/bwa
 #WORKDIR /usr/src/bwa
@@ -49,7 +69,7 @@ ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.ta
 #	&& ln -s /usr/src/bwa /opt/bwa
 
 #--------------------------------------------------------------------------------
-# HTSLIB -- install in /opt/htslib (required for Samtools)
+# HTSLIB -- install in /opt/packages/htslib (required for Samtools)
 
 #RUN mkdir -p /usr/src/htslib
 #WORKDIR /usr/src/htslib
@@ -63,7 +83,7 @@ ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.ta
 #	&& make install
 
 #--------------------------------------------------------------------------------
-# SAMTOOLS -- install in /opt/samtools
+# SAMTOOLS -- install in /opt/packages/samtools
 
 #RUN apt-get update && apt-get install -y \
 #	samtools \
@@ -82,19 +102,24 @@ ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.ta
 #	&& make install
 
 #--------------------------------------------------------------------------------
-# PICARD -- install in /opt/picard
+# PICARD -- install in /opt/packages/picard
 
 RUN mkdir -p /usr/src/picard_tools
-WORKDIR /usr/src/picard_tools
+RUN mkdir -p /opt/packages/picard/
 
 # Clone out htsjdk. First turn off git ssl verification
+WORKDIR /usr/src/
 RUN git config --global http.sslVerify false \
 	&& git clone https://github.com/samtools/htsjdk.git
-# Build from gradlew which is included
+WORKDIR /usr/src/htsjdk
+RUN ./gradlew jar
 
+WORKDIR /usr/src/picard_tools
 RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
 	&& tar --strip-components=1 -xvf picard.tar.gz -C /usr/src/picard_tools \
-	&& rm picard.tar.gz
+	&& rm picard.tar.gz \
+	&& ant clone-htsjdk \
+	&& ant
 
 # Build the distribution jar, clean up everything else
 #RUN ant clean all && \
@@ -106,45 +131,67 @@ RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
 #    rm -rf lib && \
 #    rm build.xml
 
-#	&& ln -s /usr/src/picard_tools /opt/picard_tools
+#	&& ln -s /usr/src/picard_tools /opt/packages/picard_tools
 
 #--------------------------------------------------------------------------------
-# PRINSEQ -- install in /opt/prinseq
+# PRINSEQ -- install in /opt/packages/prinseq
 
 RUN mkdir -p /usr/src/prinseq
 WORKDIR /usr/src/prinseq
 
 RUN curl -SL $PRINSEQ_DOWNLOAD_URL -o prinseq.tar.gz \
 	&& tar --strip-components=1 -xvf prinseq.tar.gz -C /usr/src/prinseq \
-	&& rm prinseq.tar.gz
-#	&& ln -s /usr/src/prinseq /opt/prinseq
+	&& rm prinseq.tar.gz \
+	&& ln -s /usr/src/prinseq /opt/packages/prinseq
 
 #--------------------------------------------------------------------------------
-# SRA_TOOKKIT -- install in /opt/sratoolkit
+# SRA_TOOKKIT -- install in /opt/packages/sra-tools
 
-RUN mkdir -p /usr/src/sratoolkit
-WORKDIR /usr/src/sratoolkit
+RUN mkdir -p /usr/src/ncbi/sratoolkit
+RUN mkdir -p /opt/packages/sra-tools
+RUN mkdir -p /usr/src/ncbi
+WORKDIR /usr/src/ncbi
 
+# First install some dependenciea
+# Clone the Git repos first
+RUN git clone https://github.com/ncbi/ncbi-vdb.git
+RUN git clone https://github.com/ncbi/ngs.git
+
+# Install NCBI-vdb
+WORKDIR /usr/src/ncbi/ncbi-vdb
+RUN ./configure \
+	&& make \
+	&& make install
+
+# Install NGS
+WORKDIR /usr/src/ncbi/ngs
+RUN ./configure \
+	&& make -C ngs-sdk \
+	&& make -C ngs-java \
+	&& make -C ngs-python \
+	&& make -C ngs-sdk install \
+	&& make -C ngs-java install \
+	&& make -C ngs-python install
+
+# Now install SRA toolkit
+WORKDIR /usr/src/ncbi/sratoolkit
 RUN curl -SL $SRA_DOWNLOAD_URL -o sra.tar.gz \
-	&& tar --strip-components=1 -xvf sra.tar.gz -C /usr/src/sratoolkit \
-	&& rm sra.tar.gz
-#	&& ./configure --prefix=/opt/sratoolkit
-#	&& sed -i -e 's/..CURDIR./\/usr\/src\/sratoolkit/' Makefile \
-#	&& make \
-#	&& make install
+	&& tar --strip-components=1 -xvf sra.tar.gz -C /usr/src/ncbi/sratoolkit \
+	&& rm sra.tar.gz \
+	&& ./configure --prefix=/opt/packages/sra-tools \
+	&& make \
+	&& make install
 
 #--------------------------------------------------------------------------------
-# NCBI_BLAST -- install in /opt/ncbi_blast
+# NCBI_BLAST -- install in /opt/packages/ncbi_blast
 
-RUN mkdir -p /usr/src/ncbi_blast
+RUN mkdir -p /usr/src/ncbi/ncbi_blast
 WORKDIR /usr/src/ncbi_blast
 
 RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
 	&& tar --strip-components=1 -xvf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
-	&& rm ncbi_blast.tar.gz
-#	&& sed -i -e 's/..HOME./\/usr\/src\/ncbi_blast/' Makefile \
-#	&& make \
-#	&& make install
+	&& rm ncbi_blast.tar.gz \ 
+	&& ln -s /usr/src/ncbi_blast /opt/packages/ncbi_blast
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP
