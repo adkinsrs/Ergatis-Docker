@@ -25,7 +25,8 @@ ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/legacy/
 ARG HTSLIB_VERSION=1.3.1
 ARG HTSLIB_DOWNLOAD_URL=https://github.com/samtools/htslib/archive/${HTSLIB_VERSION}.tar.gz
 
-ARG PICARD_VERSION=2.4.1
+#ARG PICARD_VERSION=2.0.1
+ARG PICARD_VERSION=2.5.0
 ARG PICARD_DOWNLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
 ARG PRINSEQ_VERSION=0.20.4
@@ -66,7 +67,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 #	&& tar --strip-components=1 -xvf bwa.tar.gz -C /usr/src/bwa \
 #	&& rm bwa.tar.gz \
 #	&& make all \
-#	&& ln -s /usr/src/bwa /opt/bwa
+#	&& ln -s /usr/src/bwa /opt/packages/bwa
 
 #--------------------------------------------------------------------------------
 # HTSLIB -- install in /opt/packages/htslib (required for Samtools)
@@ -108,30 +109,26 @@ RUN mkdir -p /usr/src/picard_tools
 RUN mkdir -p /opt/packages/picard/
 
 # Clone out htsjdk. First turn off git ssl verification
-WORKDIR /usr/src/
+WORKDIR /usr/src/picard_tools
 RUN git config --global http.sslVerify false \
 	&& git clone https://github.com/samtools/htsjdk.git
-WORKDIR /usr/src/htsjdk
+WORKDIR /usr/src/picard_tools/htsjdk
 RUN ./gradlew jar
 
+# Build the distribution jar, clean up everything else
 WORKDIR /usr/src/picard_tools
 RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
 	&& tar --strip-components=1 -xvf picard.tar.gz -C /usr/src/picard_tools \
 	&& rm picard.tar.gz \
-	&& ant clone-htsjdk \
-	&& ant
-
-# Build the distribution jar, clean up everything else
-#RUN ant clean all && \
-#    mv dist/picard.jar picard.jar && \
-#    mv src/scripts/picard/docker_helper.sh docker_helper.sh && \
-#    ant clean && \
-#    rm -rf htsjdk && \
-#    rm -rf src && \
-#    rm -rf lib && \
-#    rm build.xml
-
-#	&& ln -s /usr/src/picard_tools /opt/packages/picard_tools
+	&& ant clean all \
+    && mv dist/picard.jar picard.jar \
+    && mv src/scripts/picard/docker_helper.sh docker_helper.sh \
+    && ant clean \
+    && rm -rf htsjdk \
+    && rm -rf src \
+    && rm -rf lib \
+    && rm build.xml \
+	&& ln -s /usr/src/picard_tools /opt/packages/picard_tools
 
 #--------------------------------------------------------------------------------
 # PRINSEQ -- install in /opt/packages/prinseq
