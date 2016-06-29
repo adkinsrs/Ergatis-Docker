@@ -15,7 +15,7 @@ ARG PROJECT=lgtseek
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-# Installed via BioPerl
+# Installed via BioPerl (v0.7.5a)
 #ARG BWA_VERSION=0.7.15
 #ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
@@ -25,14 +25,13 @@ ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/legacy/
 ARG HTSLIB_VERSION=1.3.1
 ARG HTSLIB_DOWNLOAD_URL=https://github.com/samtools/htslib/archive/${HTSLIB_VERSION}.tar.gz
 
-#ARG PICARD_VERSION=2.0.1
 ARG PICARD_VERSION=2.5.0
 ARG PICARD_DOWNLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
 ARG PRINSEQ_VERSION=0.20.4
 ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 
-# Installed via BioPerl
+# Installed via BioPerl(v0.1.19)
 #ARG SAMTOOLS_VERSION=1.3.1
 #ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
@@ -56,6 +55,11 @@ RUN apt-get update && apt-get install -y \
 	&& apt-get autoremove -y
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
+# CPAN modules
+RUN cpanm \
+	MongoDB \
+	Mouse
 
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/packages/bwa
