@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Getopt::Long qw(:config no_ignore_case no_auto_abbrev pass_through);
-use lib ("/usr/local/projects/ergatis/package-latest/lib/perl5");
+use lib ("/opt/projects/ergatis/lib/perl5");
 use Ergatis::Pipeline;
 use Ergatis::SavedPipeline;
 use Ergatis::ConfigFile;
@@ -35,7 +35,7 @@ my $id = &make_pipeline( $layout, $repo_root, $id_repo, $config, $ergatis_config
 #Label the pipeline.
 &label_pipeline( $repo_root, $id);
 
-my $url = "http://ergatis.igs.umaryland.edu/cgi/view_pipeline.cgi?instance=$repo_root/workflow/runtime/pipeline/$id/pipeline.xml";
+my $url = "http://localhost:8080/ergatis/cgi/view_pipeline.cgi?instance=$repo_root/workflow/runtime/pipeline/$id/pipeline.xml";
 print "pipeline_id -> $id | pipeline_url -> $url\n";
 
 sub make_pipeline {
@@ -46,7 +46,9 @@ sub make_pipeline {
     if( $ergatis_config ) {
         my $xml = $repository_root."/workflow/runtime/pipeline/$pipeline_id/pipeline.xml";
         my $pipeline = new Ergatis::Pipeline( id => $pipeline_id,
-                                              path => $xml );
+                                              path => $xml,
+                                              debug => 1,
+                                              debug_file => '/home/sadkins/logs/run_lgtpipe.log' );
         $pipeline->run( 'ergatis_cfg' => $ergatis_config );
     }
     return $pipeline_id;
@@ -55,23 +57,11 @@ sub make_pipeline {
 sub label_pipeline {
         my ($repository_root, $pipeline_id) = @_; 
         my $pipeline_runtime_folder = "$repository_root/workflow/runtime/pipeline/$pipeline_id";
-	my $genome = `grep "\$;GENOME\$;=" $config|cut -d= -f2`;
-	chomp($genome);
-	my $abbreviation = `grep "\$;ABBREVIATION\$;=" $config|cut -d= -f2`;
-	chomp($abbreviation);
-	my $database = `grep "\$;DB\$;=" $config|cut -d= -f2`;
-	chomp($database);
-	my $comment = "Genome : ".$genome." , ".$abbreviation;
-	if(length($database) > 1) {
-		$comment .= "<br>Database : ".$database;
-	} 
         my $groups_file = "$pipeline_runtime_folder/pipeline.xml.groups";
         open( GROUP, ">> $groups_file") or die("Unable to open $groups_file for writing ($!)");
-        print GROUP "$comment\n";
         close(GROUP);
 	my $comment_file = "$pipeline_runtime_folder/pipeline.xml.comment";
         open( COM, ">> $comment_file") or die("Unable to open $comment_file for writing ($!)");
-        print COM "$comment";
         close(COM);
 }
 

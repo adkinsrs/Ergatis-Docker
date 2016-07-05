@@ -58,8 +58,8 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # CPAN modules
 RUN cpanm \
-	MongoDB \
-	Mouse
+	MongoDB
+#	Mouse
 
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/packages/bwa
@@ -210,10 +210,17 @@ RUN mkdir -p /opt/projects/$PROJECT \
 	&& touch /opt/projects/$PROJECT/workflow/project_id_repository/valid_id_repository \
     && cp /tmp/project.config /opt/projects/$PROJECT/workflow/.
 
+VOLUME /opt/projects/$PROJECT/output_repository
+
 # Have ergatis.ini point to new project so we can quickly access it
 RUN sed -i.bak s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
+
 #--------------------------------------------------------------------------------
-# Scripts -- Any addition post-setup scripts that need to be run
+# SCRIPTS -- Any addition post-setup scripts that need to be run
+
+# These are just scripts I am using to create and run the pipeline without using the UI
+COPY config_pipeline.sh /opt/scripts/config_pipeline.sh
+COPY run_pipeline.sh /opt/scripts/run_pipeline.sh
 
 
 # Lastly change to root directory
