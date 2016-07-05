@@ -213,13 +213,13 @@ RUN mkdir -p /opt/projects/$PROJECT \
 VOLUME /opt/projects/$PROJECT/output_repository
 
 # Have ergatis.ini point to new project so we can quickly access it
-RUN sed -i.bak s/CUSTOM/$PROJECT/g /var/www/html/ergatis/cgi/ergatis.ini
+RUN sed -i.bak "s/CUSTOM/$PROJECT/g" /var/www/html/ergatis/cgi/ergatis.ini
 
 #--------------------------------------------------------------------------------
 # SCRIPTS -- Any addition post-setup scripts that need to be run
 
 # These are just scripts I am using to create and run the pipeline without using the UI
-COPY config_pipeline.sh /opt/scripts/config_pipeline.sh
+COPY configure_pipeline.sh /opt/scripts/configure_pipeline.sh
 COPY run_pipeline.sh /opt/scripts/run_pipeline.sh
 
 

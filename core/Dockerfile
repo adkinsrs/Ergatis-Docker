@@ -99,6 +99,8 @@ RUN mkdir /var/www/html/ergatis
 COPY htdocs/ /var/www/html/ergatis/
 
 COPY ergatis.ini /var/www/html/ergatis/
+# Change the level of debugging
+COPY log4j.properties /opt/workflow/
 
 # Set up apache
 COPY 000-default.conf /etc/apache2/sites-enabled/.

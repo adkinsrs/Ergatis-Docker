@@ -48,7 +48,7 @@ sub make_pipeline {
         my $pipeline = new Ergatis::Pipeline( id => $pipeline_id,
                                               path => $xml,
                                               debug => 1,
-                                              debug_file => '/home/sadkins/logs/run_lgtpipe.log' );
+                                              debug_file => '/var/log/run_lgtpipe.log' );
         $pipeline->run( 'ergatis_cfg' => $ergatis_config );
     }
     return $pipeline_id;
