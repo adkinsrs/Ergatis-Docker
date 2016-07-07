@@ -8,8 +8,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./pipeline_builder:/var/www/html/pipeline_builder
-      - ../core/htdocs:/var/www/html/ergatis
+      - ./input_data:/mnt/input_data:ro
 
   #swarm:
   #  image: swarm

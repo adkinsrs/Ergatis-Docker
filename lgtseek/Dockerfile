@@ -215,6 +215,16 @@ VOLUME /opt/projects/$PROJECT/output_repository
 # Have ergatis.ini point to new project so we can quickly access it
 RUN sed -i.bak "s/CUSTOM/$PROJECT/g" /var/www/html/ergatis/cgi/ergatis.ini
 
+
+#--------------------------------------------------------------------------------
+# INPUT DATA -- Setting up area to mount input data directories to
+
+#RUN mkdir -p /mnt/input_data/host_ref \ 
+#	&& Bmkdir /mnt/input_data/donor_ref \ 
+#	&& mkdir /mnt/input_data/refseq_ref
+
+#VOLUME /mnt/input_data
+
 #--------------------------------------------------------------------------------
 # SCRIPTS -- Any addition post-setup scripts that need to be run
 
