@@ -71,7 +71,16 @@ RUN dpkg -i \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb
 
 # Make 'packages' dir.  Installs will build into there or will be symlinked there
-RUN mkdir -p /opt/packages
+RUN chmod 777 /opt \
+	&& mkdir -p /opt/packages && chmod 777 /opt/packages \
+	&& mkdir -p /var/www/html && chmod 777 /var/www/html
+
+#--------------------------------------------------------------------------------
+# APACHE SETUP
+COPY 000-default.conf /etc/apache2/sites-enabled/.
+COPY ergatis.conf /etc/apache2/conf-enabled/.
+RUN a2enmod cgid
+RUN a2enmod php5
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -90,6 +99,9 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
 
+# Change to user that apache creates
+USER www-data
+
 # Set up lib directory
 RUN mkdir -p /opt/ergatis/lib/
 COPY lib/ /opt/ergatis/lib/
@@ -98,17 +110,10 @@ ENV PERL5LIB=/opt/ergatis/lib/perl5
 # Set up site
 RUN mkdir /var/www/html/ergatis
 COPY htdocs/ /var/www/html/ergatis/
+COPY ergatis.ini /var/www/html/ergatis/cgi/
 
-COPY ergatis.ini /var/www/html/ergatis/
 # Change the level of debugging
 COPY log4j.properties /opt/workflow/
-
-# Set up apache
-COPY 000-default.conf /etc/apache2/sites-enabled/.
-COPY ergatis.conf /etc/apache2/conf-enabled/.
-RUN a2enmod cgid
-RUN a2enmod php5
-#CMD service apache2 start
 
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts
@@ -123,6 +128,7 @@ CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
 #--------------------------------------------------------------------------------
 # ONBUILD SETUP FOR PIPELINES (takes place in context with the inheriting image)
 
+ONBUILD USER root
 # Set up the pipeline builder UI site
 ONBUILD RUN mkdir /var/www/html/pipeline_builder
 ONBUILD COPY pipeline_builder/ /var/www/html/pipeline_builder/

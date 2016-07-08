@@ -12,6 +12,8 @@ EXPOSE 80
 # The project name
 ARG PROJECT=lgtseek
 
+USER root
+
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
@@ -196,6 +198,8 @@ RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP
+
+USER www-data
 
 COPY project.config /tmp/.
 
