@@ -32,6 +32,7 @@ RUN apt-get update && apt-get install -y \
 	libapache2-mod-php5 \
 	php5 \
 	vim \
+	wget \
 	zip \
 	zlib1g-dev \
 	&& apt-get clean autoclean \

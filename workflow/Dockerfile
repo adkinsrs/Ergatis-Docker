@@ -33,6 +33,8 @@ RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
 	&& chmod 777 /opt/workflow/server-conf \
 	&& ./deploy.sh < /tmp/workflow.deploy.answers
 
+COPY  htc.conf /opt/workflow/server-conf
+
 #ENTRYPOINT [/opt/workflow/RunWorkflow]	# This will break Ergatis if Ergatis inherits it
 CMD ["/bin/bash"]
 
