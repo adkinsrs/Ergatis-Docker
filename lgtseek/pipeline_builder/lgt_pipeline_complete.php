@@ -13,7 +13,7 @@ include_once('header.php');
                 <?php
                     include_once('lgt_pipeline_step1_submit.php');
 					if ($errFlag == 0) {
-						$pipeline_url = `/usr/bin/perl ./perl/run_pipeline.pl --layout $pipeline_layout --config $pipeline_config --repository_root $repo_root`;
+						$pipeline_url = `/usr/bin/perl ./perl/run_pipeline.pl --layout $pipeline_layout --config $pipeline_config --repository_root $repo_root` --ergatis_config $ergatis_config;
 
 						if (preg_match('/pipeline_id/',$pipeline_url,$matches)) {
 							$res = array();

@@ -92,7 +92,8 @@ RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
 	&& mkdir /usr/local/scratch/workflow/id_repository && chmod 777 /usr/local/scratch/workflow/id_repository \
 	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
 	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
-	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts
+	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts \
+	&& mkdir /usr/local/scratch/pipeline_dir && chmod 777 /usr/local/scratch/pipeline_dir
 
 RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 

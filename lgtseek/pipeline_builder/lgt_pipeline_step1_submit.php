@@ -2,38 +2,22 @@
 	$formFieldsArr = Array("output_dir" => "Output directory", "log_file" => "Log file");
 	$args = "";
 	$local_dir = "/usr/local/scratch/pipeline_dir";
+	$ergatis_config = "/var/www/html/ergatis/cgi/ergatis.ini";
 	$errFlag = 0;
 
 	# Shouldn't hard-code things but this is just being used in the Docker container
 	$repo_root = "/opt/projects/lgtseek";
 
+	# Safeguarding in case this wasn't created
+	if (!file_exists($local_dir)) {
+		if(!(mkdir($local_dir, 0777, true))) {
+			echo "<font color='red'>Error creating temporary pipeline directory $local_dir</font><br>";
+			exit(1);
+		}
+	}
+
 # The first thing to do is to create the config and layout files for the pipeline
 	if (isset($_POST['bsubmit'])) {
-		if (isset($_POST['tsra'] {
-			$args .= "--donor_reference " . trim($_POST['tsra'] . " ";
-			$formValuesArr['tsra']['error'] = 0;
-			$formValuesArr['tsra']['msg'] = "";
-		} else {
-			$errFlag++;
-			$formValuesArr['tsra']['error'] = $errFlag;
-			$formValuesArr['tsar']['msg'] = "An SRA ID is required.";
-		}
-		if (isset($_POST['tdonor'] {
-			$args .= "--donor_reference " . trim($_POST['tdonor'] . " ";
-		}
-		if (isset($_POST['thost'] {
-			$args .= "--host_reference " . trim($_POST['thost'] . " ";
-
-		}
-		if (isset($_POST['trefseq'] {
-			$args .= "--refseq_reference " . trim($_POST['trefseq'] . " ";
-			$formValuesArr['trefseq']['error'] = 0;
-			$formValuesArr['trefseq']['msg'] = "";
-		} else {
-			$errFlag++;
-			$formValuesArr['trefseq']['error'] = $errFlag;
-			$formValuesArr['trefseq']['msg'] = "A reference of refseq data information is required.";
-		}
 
 		error_reporting(0);
 		$dir = create_pipeline_dir($local_dir);
@@ -54,6 +38,39 @@
 			$formValuesArr['log_file']['error'] = 1;
 			$formValuesArr['log_file']['msg'] = "Could not create log file";
 		}
+
+		if (isset($_POST['tsra'] {
+			$args .= "--sra_id " . trim($_POST['tsra'] . " ";
+			$formValuesArr['tsra']['error'] = 0;
+			$formValuesArr['tsra']['msg'] = "";
+		} else {
+			$errFlag++;
+			$formValuesArr['tsra']['error'] = $errFlag;
+			$formValuesArr['tsar']['msg'] = "An SRA ID is required.";
+		}
+		if (isset($_POST['tdonor'] {
+			$donor = trim($_POST['tdonor'];
+			$donor = handle_if_list($donor, $dir, "/mnt/input_data/donor_ref");
+			$args .= "--donor_reference $donor ";
+		}
+		if (isset($_POST['thost'] {
+			$host = trim($_POST['thost'];
+			$host = handle_if_list($host, $dir, "/mnt/input_data/host_ref");
+			$args .= "--host_reference $host ";
+
+		}
+		if (isset($_POST['trefseq'] {
+			$refseq = trim($_POST['trefseq'];
+			$refseq = handle_if_list($refseq, $dir, "/mnt/input_data/refseq_ref");
+			$args .= "--refseq_reference $refseq ";
+			$formValuesArr['trefseq']['error'] = 0;
+			$formValuesArr['trefseq']['msg'] = "";
+		} else {
+			$errFlag++;
+			$formValuesArr['trefseq']['error'] = $errFlag;
+			$formValuesArr['trefseq']['msg'] = "A reference of refseq data information is required.";
+		}
+
 	}
 
 	if ($errFlag == 0) {
@@ -72,6 +89,7 @@
 		exit(1);
 	}
 
+	# Find our newly created pipeline_config and layout files, and create the pipeline and run
 	$pipeline_config = `find {$formValuesArr['output_dir']['default']} -name "*.config" -type f`;
 	$pipeline_layout = `find {$formValuesArr['output_dir']['default']} -name "*.layout" -type f`;
 
@@ -82,6 +100,31 @@
 	chmod($pipeline_config, 0777);
 	chmod($pipeline_layout, 0777);
 
+	# This function checks if the input file is a list.
+	# If it is a list, the paths of each file in list will be changed to reflect the location of the volume in the Docker container.  A new list file is created, and returned
+	# If not a list, the same file is returned
+	function handle_if_list ($filename, $new_dir, $new_input_dir) {
+		$file_parts = pathinfo($filename);
+
+		if ($file_parts['extension'] == 'list') {
+			# Construct filename for new list
+			$list_base = basename($filename);
+			$new_list = $new_dir . "/" . $list_base;
+
+			$fh = fopen($filename, "r");
+			$new_fh = fopen($new_list, "w");
+			while (($line = fgets($fh)) !== false) {
+				$path_base = basename(trim($line));
+				fwrite($new_fh, $new_input_dir . "/" . $path_base . "\n");
+		    }
+			fclose($new_fh);
+		    fclose($fh);
+
+			return $new_list;			
+		}
+		# This is the 'else' case
+		return $filename
+	}
 
 	function create_pipeline_dir ($local_dir) {
 		$dir_num = mt_rand(1, 999999);
@@ -89,7 +132,8 @@
 		$dir = $local_dir.$temp_num;
 		if (!file_exists($dir)) {
 			if(!(mkdir($dir, 0777, true))) {
-				return(0);
+				echo "<font color='red'>Error creating temporary pipeline directory $dir</font><br>";
+				exit(1);
 			} else {
 				return($dir);
 			}
