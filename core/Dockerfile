@@ -99,9 +99,6 @@ RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
 
-# Change to user that apache creates
-USER www-data
-
 # Set up lib directory
 RUN mkdir -p /opt/ergatis/lib/
 COPY lib/ /opt/ergatis/lib/
@@ -122,13 +119,12 @@ COPY substitute_in_wrapper.sh /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /
-# ... and start apache
+# ... and start apache as root
+USER root
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
-
 #--------------------------------------------------------------------------------
 # ONBUILD SETUP FOR PIPELINES (takes place in context with the inheriting image)
 
-ONBUILD USER root
 # Set up the pipeline builder UI site
 ONBUILD RUN mkdir /var/www/html/pipeline_builder
 ONBUILD COPY pipeline_builder/ /var/www/html/pipeline_builder/

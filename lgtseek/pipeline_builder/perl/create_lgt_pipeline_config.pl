@@ -34,7 +34,7 @@ B<--help,-h>
 =head1  DESCRIPTION
 
  DESCRIPTION
- 
+
 =head1  INPUT
 
     Describe the input
@@ -65,8 +65,8 @@ my $logfh;
 my $outdir = ".";
 my $template_directory = "/local/projects/ergatis/package-latest/global_pipeline_templates";
 my %included_subpipelines = ();
-my $donor_only;
-my $host_only;
+my $donor_only = 0;
+my $host_only = 0;
 ####################################################
 
 my %options;
@@ -88,8 +88,6 @@ sub main {
 						  "host_reference|h=s",
 						  "donor_reference|d=s",
 						  "refseq_reference|r=s",
-						  "donor_only|D",
-						  "host_only|H",
                           "template_directory|t=s",
                           "output_directory|o=s",
 						  "no_pipeline_id|p",
@@ -119,7 +117,7 @@ sub main {
 	# Write the pipeline.layout file
 	&write_pipeline_layout( $layout_writer, sub {
 		my ($writer) = @_;
-   		&write_include($writer, $pipelines->{'sra'}) if( $included_subpipelines{'sra'} );		
+   		&write_include($writer, $pipelines->{'sra'}) if( $included_subpipelines{'sra'} );
 		# Use the right layout file if this run is donor-only, or both donor/host alignment
 		if ($donor_only) {
    			&write_include($writer, $pipelines->{'indexing'}, "pipeline.donor_only.layout") if( $included_subpipelines{'indexing'} );
@@ -128,8 +126,8 @@ sub main {
    			&write_include($writer, $pipelines->{'indexing'}, "pipeline.host_only.layout") if( $included_subpipelines{'indexing'} );
    			&write_include($writer, $pipelines->{'lgtseek'}, "pipeline.host_only.layout") if( $included_subpipelines{'lgtseek'} );
 		} else {
-   			&write_include($writer, $pipelines->{'indexing'}) if( $included_subpipelines{'indexing'} );		
-   			&write_include($writer, $pipelines->{'lgtseek'}) if( $included_subpipelines{'lgtseek'} );		
+   			&write_include($writer, $pipelines->{'indexing'}) if( $included_subpipelines{'indexing'} );
+   			&write_include($writer, $pipelines->{'lgtseek'}) if( $included_subpipelines{'lgtseek'} );
 		}
 	});
 
@@ -165,7 +163,7 @@ sub main {
 	$config{"global"}->{'$;SRA_RUN_ID$;'} = $options{sra_id};
 	# Default use case (good donor and good host), we just want two specific list files.  For donor and host-only cases, we want other specific list files
 	$config{"lgt_bwa_post_process default"}->{'$;SKIP_WF_COMMAND$;'} = 'create single map BAM file list,create no map BAM file list';
-	
+
 	unless ($donor_only) {
 	# Only add host-relevant info to config if we are aligning to a host
 		if ($options{host_reference} =~ /list$/) {
@@ -199,10 +197,10 @@ sub main {
 
 	# open config file for writing
 	open( my $pcfh, "> $pipeline_config") or &_log($ERROR, "Could not open $pipeline_config for writing: $!");
-	
+
 	# Write the config
 	&write_config( \%config, $pcfh );
-	
+
 	# close the file handles
 	close($plfh);
 	close($pcfh);
@@ -317,19 +315,17 @@ sub check_options {
    	$included_subpipelines{sra} = 1;
    	$included_subpipelines{indexing} = 1;
 
-	$donor_only = $opts->{donor_only} ? 1 : 0;
-   	$host_only = $opts->{host_only} ? 1 : 0;
+	# If donor reference is not present, then we have a host-only run
+	$host_only = 1 unless ($opts->{'donor_reference'})
+
+	# If host reference is not present, then we have a donor-only run
+	$donor_only = 1 unless ($opts->{'host_reference'})
 
 	&_log($ERROR, "Cannot specify both 'donor_only' and 'host_only' options.  Choose either, or none") if ($donor_only && $host_only);
 
    print STDOUT "Perform alignments to the donor reference only.\n" if ($donor_only);
-   if ($donor_only && $opts->{'host_reference'}){
-		print STDOUT "Donor-only flag specified along with a host reference.  Ignoring 'host-reference' option\n";
-	}
    print STDOUT "Perform alignments to the host reference only.\n" if ($host_only);
-   if ($host_only && $opts->{'donor_reference'}){
-		print STDOUT "Host-only flag specified along with a donor reference.  Ignoring 'donor-reference' option\n";
-	}
+
 }
 
 sub _log {

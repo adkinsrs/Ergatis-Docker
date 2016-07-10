@@ -13,7 +13,7 @@ include_once('header.php');
                 <?php
                     include_once('lgt_pipeline_step1_submit.php');
 					if ($errFlag == 0) {
-						$pipeline_url = `/usr/bin/perl ./perl/run__pipeline.pl --layout {$formValuesArr['layout_file']['default']} --config {$formValuesArr['config_file']['default']} --repository_root {$formValuesArr['rep_root']['default']}`;
+						$pipeline_url = `/usr/bin/perl ./perl/run_pipeline.pl --layout $pipeline_layout --config $pipeline_config --repository_root $repo_root`;
 
 						if (preg_match('/pipeline_id/',$pipeline_url,$matches)) {
 							$res = array();
@@ -27,9 +27,9 @@ include_once('header.php');
 							echo "<h2>STEP FINAL : Pipeline {$res['pipeline_id ']} created successfully<sup><a href=\"./help.php\">?</a></sup></h2>";
 							echo "<h3>Following files have been created :</h3>";
 							echo "<ul>";
-							echo "<li>Pipeline Configuration File : {$formValuesArr['config_file']['default']}</li>";
-							echo "<li>Pipeline Layout File : {$formValuesArr['layout_file']['default']}</li>";
-							echo "<li>Repository Root : {$formValuesArr['rep_root']['default']}";
+							echo "<li>Pipeline Configuration File : $pipeline_config</li>";
+							echo "<li>Pipeline Layout File : $pipeline_layout</li>";
+							echo "<li>Repository Root : $repo_root";
 							echo "</ul>";
 							echo "<h3>Click the link below to view and run the pipeline in Ergatis. Hit rerun to start the pipeline</h3>";
 							echo "<font color=\"blue\">Note : Open the link below in a browser. The pipeline is only <b>created</b> but <b>NOT</b> running. Click <b>rerun</b> in ergatis to start running the pipeline.</font><br><br>";

@@ -1,22 +1,35 @@
 version: '2'
 services:
-  #db:
-  #  image: mongo
 
   ergatis:
-    build: .
+    image: adkinsrs/lgtseek
+    links:
+      - mongo
     ports:
       - "8080:80"
     volumes:
       - ./input_data:/mnt/input_data:ro
+      - ./output_data:/mnt/output_data
+    volumes_from:
+      - mongodata
+
+  mongo:
+    image: mongo:2.6
+    volumes_from:
+      - mongodata
+    ports:
+      - "27017:27017"
+    command: --smallfiles --rest
+
+  mongodata:
+    image: mongo:2.6
+    volumes:
+      - /data/db
+    command: --break-mongo
+
 
   #swarm:
   #  image: swarm
-
-  #web:
-  #  image: apache
-  #  expose: 80
-  #  links: ergatis
 
   #workflow:
   #  image: adkinsrs/workflow

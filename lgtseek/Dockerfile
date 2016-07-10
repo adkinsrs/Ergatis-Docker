@@ -12,8 +12,6 @@ EXPOSE 80
 # The project name
 ARG PROJECT=lgtseek
 
-USER root
-
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
@@ -59,7 +57,7 @@ RUN apt-get update && apt-get install -y \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # CPAN modules
-RUN cpanm \
+RUN cpanm --force \
 	MongoDB 
 #	Mouse
 
@@ -199,13 +197,14 @@ RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP
 
+# Have ergatis.ini point to new project so we can quickly access it
+RUN sed -i.bak "s/CUSTOM/$PROJECT/g" /var/www/html/ergatis/cgi/ergatis.ini
+
 USER www-data
 
 COPY project.config /tmp/.
-
 RUN mkdir -p /opt/projects/$PROJECT \
 	&& mkdir /opt/projects/$PROJECT/output_repository \
-	&& mkdir /opt/projects/$PROJECT/software \
 	&& mkdir /opt/projects/$PROJECT/workflow \
 	&& mkdir /opt/projects/$PROJECT/workflow/lock_files \
 	&& mkdir /opt/projects/$PROJECT/workflow/project_id_repository \
@@ -214,20 +213,8 @@ RUN mkdir -p /opt/projects/$PROJECT \
 	&& touch /opt/projects/$PROJECT/workflow/project_id_repository/valid_id_repository \
     && cp /tmp/project.config /opt/projects/$PROJECT/workflow/.
 
+# Making this as a volume in case we'd like to pass this data to another image
 VOLUME /opt/projects/$PROJECT/output_repository
-
-# Have ergatis.ini point to new project so we can quickly access it
-RUN sed -i.bak "s/CUSTOM/$PROJECT/g" /var/www/html/ergatis/cgi/ergatis.ini
-
-
-#--------------------------------------------------------------------------------
-# INPUT DATA -- Setting up area to mount input data directories to
-
-#RUN mkdir -p /mnt/input_data/host_ref \ 
-#	&& Bmkdir /mnt/input_data/donor_ref \ 
-#	&& mkdir /mnt/input_data/refseq_ref
-
-#VOLUME /mnt/input_data
 
 #--------------------------------------------------------------------------------
 # SCRIPTS -- Any addition post-setup scripts that need to be run
@@ -240,5 +227,6 @@ COPY run_pipeline.sh /opt/scripts/run_pipeline.sh
 # Lastly change to root directory
 #CMD ["/bin/bash"]
 WORKDIR /
-# ... and start apache
+# ... and start apache as root
+USER root
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
