@@ -32,8 +32,9 @@ RUN curl -SL $WORKFLOW_DOWNLOAD_URL -o workflow.tar.gz \
 	&& mkdir -p /opt/workflow/server-conf \
 	&& ./deploy.sh < /tmp/workflow.deploy.answers
 
-RUN chmod 777 /opt/workflow/server-conf && chmod 777 /opt/workflow/server-conf/idfile
-COPY  htc.conf /opt/workflow/server-conf
+RUN chmod 777 /opt/workflow/server-conf \
+	&& chown www-data:www-data /opt/workflow/server-conf/idfile
+COPY htc.conf /opt/workflow/server-conf
 
 RUN mkdir -p /local/services/workflow/mockserver/working \ 
 	&& chmod 777 /local/services/workflow/mockserver/working

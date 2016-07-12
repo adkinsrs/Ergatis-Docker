@@ -10,15 +10,6 @@ MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 EXPOSE 80
 
 #--------------------------------------------------------------------------------
-# SOFTWARE
-
-ARG BSML_VERSION=v2r18b1
-ARG BSML_DOWNLOAD_URL=http://sourceforge.net/projects/bsml/files/bsml/bsml-${BSML_VERSION}/bsml-${BSML_VERSION}.tar.gz
-
-ARG ERGATIS_VERSION=v2r19b4
-ARG ERGATIS_DOWNLOAD_URL=https://github.com/jorvis/ergatis/archive/${ERGATIS_VERSION}.tar.gz
-
-#--------------------------------------------------------------------------------
 # BASICS
 
 RUN apt-get update && apt-get install -y \
@@ -70,9 +61,13 @@ RUN dpkg -i \
   && rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb
 
-# Make 'packages' dir.  Installs will build into there or will be symlinked there
+# Make various directories.
+# /opt/packages is where software installs will be placed or symlinked to
+# /opt/projects is where Ergatis repository roots will be kept
+# /var/www/html is where the Ergatis site and pipeline building UI will be
 RUN chmod 777 /opt \
-	&& mkdir -p /opt/packages && chmod 777 /opt/packages \
+	&& mkdir /opt/packages && chmod 777 /opt/packages \
+#	&& mkdir /opt/projects && chmod 777 /opt/projects \
 	&& mkdir -p /var/www/html && chmod 777 /var/www/html
 
 #--------------------------------------------------------------------------------
@@ -92,8 +87,7 @@ RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
 	&& mkdir /usr/local/scratch/workflow/id_repository && chmod 777 /usr/local/scratch/workflow/id_repository \
 	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
 	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
-	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts \
-	&& mkdir /usr/local/scratch/pipeline_dir && chmod 777 /usr/local/scratch/pipeline_dir
+	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts
 
 RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 
@@ -120,8 +114,7 @@ COPY substitute_in_wrapper.sh /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /
-# ... and start apache as root
-USER root
+# ... and start apache
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
 #--------------------------------------------------------------------------------
 # ONBUILD SETUP FOR PIPELINES (takes place in context with the inheriting image)
@@ -138,6 +131,7 @@ ONBUILD COPY docs/ /opt/ergatis/docs/
 ONBUILD COPY lib/perl5 /opt/ergatis/lib/perl5/
 ONBUILD RUN mkdir /opt/ergatis/pipeline_templates
 ONBUILD COPY pipeline_templates/ /opt/ergatis/pipeline_templates/
+ONBUILD RUN find /opt/ergatis/pipeline_templates -type f -exec /usr/bin/perl -pi -e 's/\$;NODISTRIB\$;\s?=\s?0/\$;NODISTRIB\$;=1/g' {} \;
 ONBUILD COPY software.config /opt/ergatis/.
 
 # Build wrapper scripts for each perl script in /opt/ergatis/bin
