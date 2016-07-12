@@ -58,7 +58,8 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # CPAN modules
 RUN cpanm --force \
-	MongoDB 
+	MongoDB \
+	Bio::DB::EUtilities
 #	Mouse
 
 #--------------------------------------------------------------------------------

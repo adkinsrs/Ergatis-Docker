@@ -11,9 +11,12 @@ include_once('header.php');
 			<div id='content_container'>
 */  ?>
                 <?php
+                ini_set('display_errors', 'On');
+                error_reporting(E_ALL | E_STRICT);
+
                     include_once('lgt_pipeline_step1_submit.php');
 					if ($errFlag == 0) {
-						$pipeline_url = `/usr/bin/perl ./perl/run_pipeline.pl --layout $pipeline_layout --config $pipeline_config --repository_root $repo_root` --ergatis_config $ergatis_config;
+						$pipeline_url = `/usr/bin/perl ./perl/run_pipeline.pl --layout $pipeline_layout --config $pipeline_config --repository_root $repo_root --ergatis_config $ergatis_config`;
 
 						if (preg_match('/pipeline_id/',$pipeline_url,$matches)) {
 							$res = array();

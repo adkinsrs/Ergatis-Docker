@@ -3,29 +3,32 @@ services:
 
   ergatis:
     image: adkinsrs/lgtseek
-    links:
-      - mongo
+    #links:
+    #  - mongo
+    mem_limit: 5120000000
     ports:
       - "8080:80"
     volumes:
       - ./input_data:/mnt/input_data:ro
       - ./output_data:/mnt/output_data
-    volumes_from:
-      - mongodata
+#testing purposes
+      - ./pipeline_builder:/var/www/html/pipeline_builder
+    #volumes_from:
+    #  - mongodata
 
-  mongo:
-    image: mongo:2.6
-    volumes_from:
-      - mongodata
-    ports:
-      - "27017:27017"
-    command: --smallfiles --rest
+#  mongo:
+#    image: mongo:2.6
+#    volumes_from:
+#      - mongodata
+#    ports:
+#      - "27017:27017"
+#    command: --smallfiles --rest
 
-  mongodata:
-    image: mongo:2.6
-    volumes:
-      - /data/db
-    command: --break-mongo
+#  mongodata:
+#    image: mongo:2.6
+#    volumes:
+#      - /data/db
+#    command: --break-mongo
 
 
   #swarm:
