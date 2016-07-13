@@ -15,9 +15,8 @@ ARG PROJECT=lgtseek
 #--------------------------------------------------------------------------------
 # SOFTWARE
 
-# Installed via BioPerl (v0.7.5a)
-#ARG BWA_VERSION=0.7.15
-#ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
+ARG BWA_VERSION=0.7.15
+ARG BWA_DOWNLOAD_URL=https://github.com/lh3/bwa/archive/v${BWA_VERSION}.tar.gz
 
 ARG NCBI_BLAST_VERSION=2.2.9
 ARG NCBI_BLAST_DOWNLOAD_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/legacy/${NCBI_BLAST_VERSION}/blast-${NCBI_BLAST_VERSION}-amd64-linux.tar.gz
@@ -29,11 +28,11 @@ ARG PICARD_VERSION=2.5.0
 ARG PICARD_DOWNLOAD_URL=https://github.com/broadinstitute/picard/archive/${PICARD_VERSION}.tar.gz
 
 ARG PRINSEQ_VERSION=0.20.4
-ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
+ARG PRINSEQ_DOWNLOAD_URL=http://mirror.ufs.ac.za/applications/prinseq/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
+#ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 
-# Installed via BioPerl(v0.1.19)
-#ARG SAMTOOLS_VERSION=1.3.1
-#ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
+ARG SAMTOOLS_VERSION=1.3.1
+ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
 ARG SRA_VERSION=2.6.3
 ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
@@ -59,53 +58,57 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 # CPAN modules
 RUN cpanm --force \
 	MongoDB \
+	BioPerl \
 	Bio::DB::EUtilities
 #	Mouse
 
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/packages/bwa
 
-#RUN mkdir -p /usr/src/bwa
-#WORKDIR /usr/src/bwa
+RUN mkdir -p /usr/src/bwa
+WORKDIR /usr/src/bwa
 
-#RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
-#	&& tar --strip-components=1 -xvf bwa.tar.gz -C /usr/src/bwa \
-#	&& rm bwa.tar.gz \
-#	&& make all \
-#	&& ln -s /usr/src/bwa /opt/packages/bwa
+RUN curl -SL $BWA_DOWNLOAD_URL -o bwa.tar.gz \
+	&& tar --strip-components=1 -xvzf bwa.tar.gz -C /usr/src/bwa \
+	&& rm bwa.tar.gz \
+	&& make all \
+	&& ln -s /usr/src/bwa /opt/packages/bwa \
+	&& chmod 755 /opt/packages/bwa/*
 
 #--------------------------------------------------------------------------------
 # HTSLIB -- install in /opt/packages/htslib (required for Samtools)
 
-#RUN mkdir -p /usr/src/htslib
-#WORKDIR /usr/src/htslib
+RUN mkdir -p /usr/src/htslib7yy
+WORKDIR /usr/src/htslib
 
-#RUN curl -SL $HTSLIB_DOWNLOAD_URL -o htslib.tar.gz \
-#	&& tar --strip-components=1 -xvf htslib.tar.gz -C /usr/src/htslib \
-#	&& rm htslib.tar.gz \
-#	&& autoconf \
-#	&& ./configure --prefix /opt/htslib \
+RUN curl -SL $HTSLIB_DOWNLOAD_URL -o htslib.tar.gz \
+	&& tar --strip-components=1 -xvzf htslib.tar.gz -C /usr/src/htslib \
+	&& rm htslib.tar.gz \
+	&& autoconf
+#	&& ./configure --prefix /opt/packages/htslib \
 #	&& make \
 #	&& make install
 
 #--------------------------------------------------------------------------------
 # SAMTOOLS -- install in /opt/packages/samtools
+# Had to consult this to get it to build https://github.com/samtools/samtools/issues/500
+# Also had to grab an updated "configure.ac" file since it patched a bug with the --without-curses options in ./configure
 
-#RUN apt-get update && apt-get install -y \
-#	samtools \
-#	&& apt-get clean autoclean \
-#	&& apt-get autoremove -y
+RUN mkdir -p /usr/src/samtools
+WORKDIR /usr/src/samtools
 
-#RUN mkdir -p /usr/src/samtools
-#WORKDIR /usr/src/samtools
-
-#RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
-#	&& tar --strip-components=1 -xvf samtools.tar.gz -C /usr/src/samtools \
-#	&& rm samtools.tar.gz \
-#	&& autoconf \
-#	&& ./configure --without-curses --prefix=/opt/samtools --with-htslib=/opt/htslib/ \
+RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
+	&& tar --strip-components=1 -xvzf samtools.tar.gz -C /usr/src/samtools \
+	&& rm samtools.tar.gz \
+	&& mkdir autoconf \
+	&& wget -O autoconf/ax_with_htslib.m4 https://github.com/samtools/samtools/files/62424/ax_with_htslib.m4.txt \
+	&& wget -O ./configure.ac https://raw.githubusercontent.com/samtools/samtools/develop/configure.ac \
+	&& aclocal -I./autoconf \
+	&& autoconf \
+	&& ./configure --without-curses --prefix=/opt/packages/samtools \
 #	&& make all all-htslib \
-#	&& make install
+	&& make \
+	&& make install
 
 #--------------------------------------------------------------------------------
 # PICARD -- install in /opt/packages/picard
@@ -123,7 +126,7 @@ RUN ./gradlew jar
 # Build the distribution jar, clean up everything else
 WORKDIR /usr/src/picard_tools
 RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
-	&& tar --strip-components=1 -xvf picard.tar.gz -C /usr/src/picard_tools \
+	&& tar --strip-components=1 -xvzf picard.tar.gz -C /usr/src/picard_tools \
 	&& rm picard.tar.gz \
 	&& ant clean all \
     && mv dist/picard.jar picard.jar \
@@ -142,7 +145,7 @@ RUN mkdir -p /usr/src/prinseq
 WORKDIR /usr/src/prinseq
 
 RUN curl -SL $PRINSEQ_DOWNLOAD_URL -o prinseq.tar.gz \
-	&& tar --strip-components=1 -xvf prinseq.tar.gz -C /usr/src/prinseq \
+	&& tar --strip-components=1 -xvzf prinseq.tar.gz -C /usr/src/prinseq \
 	&& rm prinseq.tar.gz \
 	&& ln -s /usr/src/prinseq /opt/packages/prinseq
 
@@ -178,7 +181,7 @@ RUN ./configure \
 # Now install SRA toolkit
 WORKDIR /usr/src/ncbi/sratoolkit
 RUN curl -SL $SRA_DOWNLOAD_URL -o sra.tar.gz \
-	&& tar --strip-components=1 -xvf sra.tar.gz -C /usr/src/ncbi/sratoolkit \
+	&& tar --strip-components=1 -xvzf sra.tar.gz -C /usr/src/ncbi/sratoolkit \
 	&& rm sra.tar.gz \
 	&& ./configure --prefix=/opt/packages/sra-tools \
 	&& make \
@@ -191,7 +194,7 @@ RUN mkdir -p /usr/src/ncbi/ncbi_blast
 WORKDIR /usr/src/ncbi_blast
 
 RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
-	&& tar --strip-components=1 -xvf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
+	&& tar --strip-components=1 -xvzf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
 	&& rm ncbi_blast.tar.gz \ 
 	&& ln -s /usr/src/ncbi_blast /opt/packages/ncbi_blast
 

@@ -33,7 +33,6 @@ RUN apt-get update && apt-get install -y \
 # PERL for ergatis
 
 RUN apt-get update && apt-get install -y \
-	bioperl \
 	libcpan-meta-perl \
 	libcdb-file-perl \
 	libcgi-session-perl \
@@ -50,6 +49,7 @@ RUN apt-get update && apt-get install -y \
 	libxml-rss-perl \
 	libxml-twig-perl \
 	libxml-writer-perl \
+	libxml-libxml-perl \
 	&& apt-get clean autoclean \
 	&& apt-get autoremove -y
 
