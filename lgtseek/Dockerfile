@@ -58,12 +58,12 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 # CPAN modules
 RUN cpanm --force \
 	MongoDB \
-	Bio::DB::EUtilities
-#	BioPerl
+	Bio::DB::EUtilities \
+	BioPerl
 #	Mouse
 
 # For some reason BioPerl is not installing fine right now
-RUN cpanm --mirror-only --mirror https://stratopan.com/MeNoSeeGood/Manatee/master BioPerl
+#RUN cpanm --mirror-only --mirror https://stratopan.com/MeNoSeeGood/Manatee/master BioPerl
 
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/packages/bwa
@@ -107,7 +107,7 @@ RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
 	&& autoconf \
 	&&./configure --without-curses --prefix=/opt/packages/samtools \
 	&& make \
-	&&  make install
+	&& make install
 
 #--------------------------------------------------------------------------------
 # PICARD -- install in /opt/packages/picard

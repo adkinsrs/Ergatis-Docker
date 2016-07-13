@@ -1,1 +1,6 @@
-input_data
+/input_data/donor_ref/*
+/input_data/host_ref/*
+/input_data/refseq_ref/*
+!/input_data/donor_ref/.placeholder
+!/input_data/host_ref/.placeholder
+!/input_data/refseq_ref/.placeholder

@@ -20,9 +20,9 @@ NOTE:  Since currently the only pipeline in development is the lgtseek pipeline,
 
 ```
 cd ./lgtseek
-mkdir input_data/donor_ref
-mkdir input_data/host_ref
-mkdir input_data/refseq_ref
+ls input_data
+
+donor_ref	host_ref	refseq_ref
 ```
 These three directories are where you would place your donor reference, host reference, or RefSeq reference data respectively.  For each reference, a single fasta-formatted file will be accepted, or a list file containing the paths of fasta-formatted files in the same directory (the list file must end in .list) 
 
