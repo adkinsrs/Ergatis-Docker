@@ -14,16 +14,27 @@ Other specific directories represent certain pipelines that can created and laun
 ### Tag naming conventions
 For both the Ergatis and pipeline images, the "latest" tag will essentially be the equivalent of the development tag.  Formal release tags will have a version number (v1.0, v1.1, etc.)
 
-## Starting a Docker container
+## Setting up volumes for input_data
+
+NOTE:  Since currently the only pipeline in development is the lgtseek pipeline, this is where I am posting directions for now.
+
+```
+cd ./lgtseek
+mkdir input_data/donor_ref
+mkdir input_data/host_ref
+mkdir input_data/refseq_ref
+```
+These three directories are where you would place your donor reference, host reference, or RefSeq reference data respectively.  For each reference, a single fasta-formatted file will be accepted, or a list file containing the paths of fasta-formatted files in the same directory (the list file must end in .list) 
+
+## Starting a Docker container using Docker Compose
 These will use the LGTSeek pipeline as an example.
 
 To run a docker container:
 ```
-docker run -p 8080:80 -v <input_data_path>:/mnt/input_data -d adkinsrs/lgtseek
+cd ./lgtseek
+docker-compose up -d
 ```
 Note that the container will run in detached mode (-d option), meaning it will run in the background.  The first time a container is created from a given image may take a little bit longer to execute, since Docker needs to pull the image from the Dockerhub registry first.
-
-The -v option specifies the mount path of the input_data directory from host to container (separated by a semi-colon). Replace the <input_data_path> with the path of your input data on the host.  The container path of /mnt/input_data should NOT be changed, as this is where the specified Ergatis pipeline will look for initial input
 
 Verify the docker container is up by running:
 ```
@@ -31,17 +42,15 @@ docker ps
 ```
 This should give you valuable information such as the container ID, time it has been running, among other things
 
+The access the UI to create your pipeline, please go to
+[http://localhost:8080/pipeline_builder/](http://localhost:8080/pipeline_builder/).
+
 In your internet browser, you can access the Ergatis homepage by navigating to [http://localhost:8080/ergatis/](http://localhost:8080/ergatis/).
 
 To stop the container, and free up valuable CPU and memory resources, run the following:
 ```
-docker stop <CONTAINER ID>
-```
-where <CONTAINER ID>  is the alphanumeric ID obtained from the earlier `docker ps` command.  Only the first few characters of the <CONTAINER ID> need to be entered, since Docker can recognize which full-length container ID the character string corresponds to
-
-To remove the container permanently, run the following:
-```
-docker rm <CONTAINER ID>
+cd ./lgtseek
+docker-compose down -v
 ```
 
 ## Future improvements (or TODOs)
