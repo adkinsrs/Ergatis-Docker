@@ -31,7 +31,7 @@ ARG PRINSEQ_VERSION=0.20.4
 ARG PRINSEQ_DOWNLOAD_URL=http://mirror.ufs.ac.za/applications/prinseq/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 #ARG PRINSEQ_DOWNLOAD_URL=https://sourceforge.net/projects/prinseq/files/standalone/prinseq-lite-${PRINSEQ_VERSION}.tar.gz
 
-ARG SAMTOOLS_VERSION=1.3.1
+ARG SAMTOOLS_VERSION=1.3
 ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
 ARG SRA_VERSION=2.6.3
@@ -58,9 +58,12 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 # CPAN modules
 RUN cpanm --force \
 	MongoDB \
-	BioPerl \
 	Bio::DB::EUtilities
+#	BioPerl
 #	Mouse
+
+# For some reason BioPerl is not installing fine right now
+RUN cpanm --mirror-only --mirror https://stratopan.com/MeNoSeeGood/Manatee/master BioPerl
 
 #--------------------------------------------------------------------------------
 # BWA -- install in /opt/packages/bwa
@@ -85,9 +88,6 @@ RUN curl -SL $HTSLIB_DOWNLOAD_URL -o htslib.tar.gz \
 	&& tar --strip-components=1 -xvzf htslib.tar.gz -C /usr/src/htslib \
 	&& rm htslib.tar.gz \
 	&& autoconf
-#	&& ./configure --prefix /opt/packages/htslib \
-#	&& make \
-#	&& make install
 
 #--------------------------------------------------------------------------------
 # SAMTOOLS -- install in /opt/packages/samtools
@@ -105,10 +105,9 @@ RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
 	&& wget -O ./configure.ac https://raw.githubusercontent.com/samtools/samtools/develop/configure.ac \
 	&& aclocal -I./autoconf \
 	&& autoconf \
-	&& ./configure --without-curses --prefix=/opt/packages/samtools \
-#	&& make all all-htslib \
+	&&./configure --without-curses --prefix=/opt/packages/samtools \
 	&& make \
-	&& make install
+	&&  make install
 
 #--------------------------------------------------------------------------------
 # PICARD -- install in /opt/packages/picard
