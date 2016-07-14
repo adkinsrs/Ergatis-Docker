@@ -86,14 +86,17 @@
 		exit(1);
 	}
 
-	#if (!file_exists( $pipeline_config )){
-	#	echo "<li><font color=\"red\">ERROR !! $pipeline_config does not appear to exist!</font></li>";
-	#	exit(1);
-	#}
-	#if (!file_exists( $pipeline_layout )){
-	#	"<li><font color=\"red\">ERROR !! $pipeline_layout does not appear to exist!</font></li>";
-	#	exit(1);
-	#}
+	$p_config = trim($pipeline_config);
+	$p_layout = trim($pipeline_layout);
+
+	if (!file_exists( $p_config )){
+		echo "<li><font color=\"red\">ERROR !! $p_config does not appear to exist!</font></li>";
+		exit(1);
+	}
+	if (!file_exists( $p_layout )){
+		"<li><font color=\"red\">ERROR !! $p_layout does not appear to exist!</font></li>";
+		exit(1);
+	}
 
 	# This function checks if the input file is a list.
 	# If it is a list, the paths of each file in list will be changed to reflect the location of the volume in the Docker container.  A new list file is created, and returned

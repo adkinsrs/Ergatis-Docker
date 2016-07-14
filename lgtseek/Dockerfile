@@ -58,11 +58,12 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 # CPAN modules
 RUN cpanm --force \
 	MongoDB \
-	Bio::DB::EUtilities \
-	BioPerl
+	Bio::Perl \
+	Bio::DB::EUtilities
 #	Mouse
 
-# For some reason BioPerl is not installing fine right now
+# For some reason BioPerl was not installing so here are two backups to try
+#RUN cpanm --force CJFIELDS/BioPerl-1.6.924.tar.gz
 #RUN cpanm --mirror-only --mirror https://stratopan.com/MeNoSeeGood/Manatee/master BioPerl
 
 #--------------------------------------------------------------------------------
