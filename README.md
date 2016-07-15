@@ -10,6 +10,7 @@ First things first,
 Get the code:
 ```
 git clone https://github.com/adkinsrs/Ergatis-Docker.git
+cd Ergatis-Docker
 ```
 
 ### Base Ergatis
@@ -36,7 +37,7 @@ These three directories are where you would place your donor reference, host ref
 ## Starting a Docker container using Docker Compose
 These will use the LGTSeek pipeline as an example.
 
-To run a docker container:
+To run a docker container (from ./Ergatis-Docker):
 ```
 cd ./lgtseek
 docker-compose up -d
