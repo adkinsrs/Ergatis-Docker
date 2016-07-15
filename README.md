@@ -5,6 +5,13 @@ Docker container for the Ergatis web framework that runs various pipelines as th
 
 ## General information
 
+First things first,
+
+Get the code:
+```
+git clone https://github.com/adkinsrs/Ergatis-Docker.git
+```
+
 ### Base Ergatis
 The core/ directory stores the core Ergatis contents necessary to build a pipeline-less Ergatis container.  It contains the basic Ergatis website, and just some general code that will be used.  Normally one would not build the Ergatis image on its own, but it may prove useful if the developer wants to have a blank slate for prototyping a pipeline microservice, and/or wanted to commit the Docker image rather than build from a Dockerfile.  This Ergatis Docker image inherits from the Workflow Docker image, which itself inherits from Ubuntu 14.04
 
