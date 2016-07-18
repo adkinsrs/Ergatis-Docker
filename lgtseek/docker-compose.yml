@@ -11,8 +11,6 @@ services:
     volumes:
       - ./input_data:/mnt/input_data:ro
       - ./output_data:/mnt/output_data
-#testing purposes
-      - ./pipeline_builder:/var/www/html/pipeline_builder
     #volumes_from:
     #  - mongodata
 
@@ -30,7 +28,7 @@ services:
 #      - /data/db
 #    command: --break-mongo
 
-
+# NOT IN USE
   #swarm:
   #  image: swarm
 

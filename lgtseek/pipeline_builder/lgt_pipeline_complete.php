@@ -35,7 +35,7 @@ include_once('header.php');
 							echo "<li>Repository Root : $repo_root";
 							echo "</ul>";
 							echo "<h3>Click the link below to view and run the pipeline in Ergatis. Hit rerun to start the pipeline</h3>";
-							echo "<font color=\"blue\">Note : Open the link below in a browser. The pipeline is only <b>created</b> but <b>NOT</b> running. Click <b>rerun</b> in ergatis to start running the pipeline.</font><br><br>";
+							echo "<font color=\"blue\">Note : Open the link below in a browser. The pipeline should start running automatically.</font><br><br>";
 							echo "<a href=\"{$res[' pipeline_url ']}\" target=\"_blank\">{$res[' pipeline_url ']}</a>";
 						} else {
 							echo "<br>";

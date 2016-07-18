@@ -3,7 +3,7 @@
 	error_reporting(E_ALL | E_STRICT);
 
 	$formFieldsArr = Array("output_dir" => "Output directory", "log_file" => "Log file");
-	$args = "";
+	$args = "-i ";
 	$local_dir = "/usr/local/scratch/pipeline_dir";
 	$ergatis_config = "/var/www/html/ergatis/cgi/ergatis.ini";
 	$errFlag = 0;
@@ -36,12 +36,12 @@
 			$formValuesArr['tsra']['error'] = $errFlag;
 			$formValuesArr['tsar']['msg'] = "An SRA ID is required.";
 		}
-		if ( isset($_POST['tdonor']) ) {
+		if ( isset($_POST['tdonor']) && ! empty($_POST['tdonor']) ) {
 			$donor = trim($_POST['tdonor']);
 			$donor = adjust_paths($donor, $dir, "/mnt/input_data/donor_ref");
 			$args .= "--donor_reference $donor ";
 		}
-		if ( isset($_POST['thost']) ) {
+		if ( isset($_POST['thost']) && ! empty($_POST['thost']) ) {
 			$host = trim($_POST['thost']);
 			$host = adjust_paths($host, $dir, "/mnt/input_data/host_ref");
 			$args .= "--host_reference $host ";

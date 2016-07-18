@@ -34,7 +34,7 @@ ARG PRINSEQ_DOWNLOAD_URL=http://mirror.ufs.ac.za/applications/prinseq/standalone
 ARG SAMTOOLS_VERSION=1.3
 ARG SAMTOOLS_DOWNLOAD_URL=https://github.com/samtools/samtools/archive/${SAMTOOLS_VERSION}.tar.gz
 
-ARG SRA_VERSION=2.6.3
+ARG SRA_VERSION=2.7.0
 ARG SRA_DOWNLOAD_URL=https://github.com/ncbi/sra-tools/archive/${SRA_VERSION}.tar.gz
 
 ### OpenJDK-8-JDK is natively not available for Ubuntu 14.04 so we need a workaround here
