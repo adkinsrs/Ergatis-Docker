@@ -3,7 +3,7 @@
 	error_reporting(E_ALL | E_STRICT);
 
 	$formFieldsArr = Array("output_dir" => "Output directory", "log_file" => "Log file");
-	$args = "-i ";
+	$args = "-b ";	# Want to build indexes in pipeline by default
 	$local_dir = "/usr/local/scratch/pipeline_dir";
 	$ergatis_config = "/var/www/html/ergatis/cgi/ergatis.ini";
 	$errFlag = 0;
