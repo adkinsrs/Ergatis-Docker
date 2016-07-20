@@ -114,7 +114,6 @@ RUN curl -SL $SAMTOOLS_DOWNLOAD_URL -o samtools.tar.gz \
 # PICARD -- install in /opt/packages/picard
 
 RUN mkdir -p /usr/src/picard_tools
-RUN mkdir -p /opt/packages/picard/
 
 # Clone out htsjdk. First turn off git ssl verification
 WORKDIR /usr/src/picard_tools
