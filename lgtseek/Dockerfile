@@ -136,7 +136,7 @@ RUN curl -SL $PICARD_DOWNLOAD_URL -o picard.tar.gz \
     && rm -rf src \
     && rm -rf lib \
     && rm build.xml \
-	&& ln -s /usr/src/picard_tools /opt/packages/picard_tools
+	&& ln -s /usr/src/picard_tools /opt/packages/picard
 
 #--------------------------------------------------------------------------------
 # PRINSEQ -- install in /opt/packages/prinseq

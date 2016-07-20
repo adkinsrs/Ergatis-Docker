@@ -19,8 +19,9 @@
 		$args .= "--output_directory $dir ";
 
 		if (isset($dir)) {
-			$formValuesArr['log_file']['default'] = $dir."/create_lgt_pipeline.log";
-			$args .= "--log $dir"."/create_lgt_pipeline.log ";
+			$formValuesArr['log_file']['create'] = $dir."/create_lgt_pipeline.log";
+			$formValuesArr['log_file']['run'] = $dir."/run_lgt_pipeline.log";
+			$args .= "--log {$formValuesArr['log_file']['create']} ";
 		} else {
 			$errFlag++;
 			$formValuesArr['log_file']['error'] = 1;

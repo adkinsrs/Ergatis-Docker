@@ -11,6 +11,8 @@ services:
     volumes:
       - ./input_data:/mnt/input_data:ro
       - ./output_data:/mnt/output_data
+#      - ./pipeline_builder:/var/www/html/pipeline_builder
+#      - ./lib/perl5/GiTaxon.pm:/opt/ergatis/lib/perl5/GiTaxon.pm
     #volumes_from:
     #  - mongodata
 

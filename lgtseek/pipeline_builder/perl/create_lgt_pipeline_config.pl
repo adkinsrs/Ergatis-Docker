@@ -198,7 +198,7 @@ sub main {
 			$config{"global"}->{'$;HOST_REFERENCE$;'} = $options{host_reference};
 		}
 		# The mpileup component needs the host reference to serve as a reference here too
-		$config{'lgt_mpileup lgt'}->{'FASTA_REFERENCE'} = $options{host_reference};
+		$config{'lgt_mpileup lgt'}->{'$;FASTA_REFERENCE$;'} = $options{host_reference};
 	}
 
 	if ($host_only) {
