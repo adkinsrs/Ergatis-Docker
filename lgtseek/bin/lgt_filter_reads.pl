@@ -74,10 +74,8 @@ foreach my $i_file (@input_files) {
     my $MU = 0;    # Also keeps track of UM
     my $UU = 0;
     ( $sFbase, $sFdir, $sFext ) = fileparse( $i_file, qr/\.[^.]*/ );
-    my $sSortedFile = $sFbase . ".name.sorted";
+    my $sSortedFile = $sFbase . ".name.sorted.bam";
     SortBam( \%hCmdLineArgs, $sSortedFile, $i_file );
-    $sSortedFile =
-      $sSortedFile . ".bam";    # Samtools appends .bam to the end of the file
 
     # View the sorted BAM file, and only output the SAM headers
     $sCmd =
@@ -223,13 +221,6 @@ sub SortBam {
         $sOptions = $phCmdLineArgs->{'samtools_params'};
     }
     $sOut = $phCmdLineArgs->{'output_dir'} . "/" . $sFile;
-
-# Shaun Adkins - Commented out other command because it is Samtools-1.2.  We are using Samtools-0.1
-#    $sCmd =
-#        $phCmdLineArgs->{'samtools_path'} . " sort"
-#      . $sOptions . " -n "
-#      . $input_file . " "
-#      . $sOut;
 
 $sCmd = $phCmdLineArgs->{'samtools_path'}." sort ".$sOptions." -O bam -n -o ".$sOut." -T /tmp/".$sFile." " . $input_file;
     printLogMsg( $DEBUG,
