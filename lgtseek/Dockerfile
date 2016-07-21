@@ -187,15 +187,7 @@ RUN curl -SL $SRA_DOWNLOAD_URL -o sra.tar.gz \
 	&& make install
 
 #--------------------------------------------------------------------------------
-# NCBI_BLAST -- install in /opt/packages/ncbi_blast
-
-RUN mkdir -p /usr/src/ncbi/ncbi_blast
-WORKDIR /usr/src/ncbi_blast
-
-RUN curl -SL $NCBI_BLAST_DOWNLOAD_URL -o ncbi_blast.tar.gz \
-	&& tar --strip-components=1 -xvzf ncbi_blast.tar.gz -C /usr/src/ncbi_blast \
-	&& rm ncbi_blast.tar.gz \ 
-	&& ln -s /usr/src/ncbi_blast /opt/packages/ncbi_blast
+# NCBI_BLAST+ -- Installed via apt-getExecs in /usr/bin/
 
 #--------------------------------------------------------------------------------
 # PROJECT REPOSITORY SETUP

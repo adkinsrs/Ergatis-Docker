@@ -9,6 +9,7 @@ services:
     ports:
       - "8080:80"
     volumes:
+      - ./databsase:/mnt/database:ro
       - ./input_data:/mnt/input_data:ro
       - ./output_data:/mnt/output_data
 #      - ./pipeline_builder:/var/www/html/pipeline_builder

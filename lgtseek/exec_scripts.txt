@@ -1,4 +1,7 @@
+analysis2bsml
+blast2bsml
 blast2lca
+compress_file
 concatenate_files
 create_file_iterator_list
 create_iterator_groups
@@ -13,6 +16,7 @@ lgt_create_validated_bam
 lgt_filter_reads
 lgt_finder
 lgt_mpileup
+merge_lists
 replace_config_keys
 replace_template_keys
 sam2fasta
