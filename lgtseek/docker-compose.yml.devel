@@ -9,10 +9,11 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ###DONOR_MNT###:/mnt/input_data/donor_ref:ro
-      - ###HOST_MNT###:/mnt/input_data/host_ref:ro
-      - ###REFSEQ_MNT###:/mnt/input_data/refseq_ref:ro
-      - ###OUTPUT_DATA###:/mnt/output_data
+      - ./input_data:/mnt/input_data:ro
+      - ./output_data:/mnt/output_data
+      - ./split_multifasta.fsa.list:/mnt/split_multifasta.fsa.list
+#      - ./pipeline_builder:/var/www/html/pipeline_builder
+#      - ./lib/perl5/GiTaxon.pm:/opt/ergatis/lib/perl5/GiTaxon.pm
     volumes_from:
       - mongodata
 
@@ -31,3 +32,10 @@ services:
     volumes:
       - /data/db
     command: --break-mongo
+
+# NOT IN USE
+  #swarm:
+  #  image: swarm
+
+  #workflow:
+  #  image: adkinsrs/workflow
