@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<commandSetRoot xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation='commandSet.xsd'>
+    <commandSet type="serial">
+        <state>incomplete</state>
+        <name>gather lgtview workflow</name>
+        <command>
+            <type>RunUnixCommand</type>
+            <name>create pipeline directory</name>
+            <state>incomplete</state>
+            <executable>mkdir</executable>
+            <arg>-p -m 777 $;OUTPUT_DIRECTORY$;/$;RUN_ID$;</arg>
+        </command>
+        <command>
+            <type>RunUnixCommand</type>
+            <name>move LCA output</name>
+            <state>incomplete</state>
+            <executable>mv</executable>
+            <arg>$;LGT_CLONE_OUT$; $;BLAST_M8_OUT$; $;METADATA_FILE$; $;OUTPUT_DIRECTORY$;/$;RUN_ID$;/</arg>
+        </command>
+    </commandSet>
+</commandSetRoot>

@@ -84,6 +84,8 @@ sub findLGT {
     open OUTCLONE, ">$output_dir/$filename\_by_clone.txt"
       or die
       "Couldn't open by_clone output: $output_dir/$filename\_by_clone.txt $!";
+    print OUTCLONE
+      "Clone\tDonor-genera\tHost-genera\td-read\td-eval\td-align-len\td-lineage\td-hit-filter\th-read\th-eval\th-align-len\th-lineage\th-hit-filter\n";
     open OUTTRACE, ">$output_dir/$filename\_by_trace.txt"
       or die
       "Couldn't open by_trace output: $output_dir/$filename\_by_trace.txt $!";
@@ -92,7 +94,7 @@ sub findLGT {
 
     # Handle differently single input file vs input file list
     if ( $options->{input} ) {
-        my $old_prefix;
+        my $old_prefix = '';
         foreach my $file ( split( /,/, $options->{input} ) ) {
             chomp;
 
@@ -124,7 +126,7 @@ sub findLGT {
         my ( $filename, $directories, $suffix ) =
           fileparse( $options->{input_file_list}, qr/\.[^.]*/ );
 
-        my $old_prefix;
+        my $old_prefix = '';
         while (<IN>) {
             chomp;
             my ( $filename, $directories, $suffix ) =
@@ -222,7 +224,7 @@ sub _process_overall {
         if ( !$traces_by_template->{ $hit->{template_id} }->{$dir}->{$genera} ) {
             $traces_by_template->{ $hit->{template_id} }->{$dir}->{$genera} =[];
         }
-		
+
 		# Filter out certain genus names and process the remaining
         if ( !&filter_genera($genera) ) {
             $traces_by_template->{ $hit->{template_id} }->{$dir}->{traces}
@@ -361,7 +363,7 @@ sub _find_lgt_in_trace {
                 }
             }
         }
-		
+
 		# If LGT was found then print all sorts of nice info about it.
         if ($found_lgt) {
 #            print STDERR "Found LGT in trace $trace between ".join(',',keys %$genera)."\n";
@@ -425,7 +427,7 @@ sub _find_lgt_in_clone {
             keys %{ $traces_by_template->{$clone}->{reverse}->{lineages} } );
 
         if ( $forward && $reverse ) {
-			
+
         	my $fwd_traces = [];
         	my $rev_traces = [];
 
@@ -447,7 +449,7 @@ sub _find_lgt_in_clone {
 			#template_id	F	trace_id	genera	trace_id,eval,align_len,lca,hit_filter
 			#my @Ffields = ( $clone, 'F', $nft, $forward, join( ",", @$fwd_traces ) );
 			#my $fline = join( "\t", @Ffields );
-			
+
 			# Now for the reverse hit information
             my $rhit = $traces_by_template->{$clone}->{reverse}->{hit};
             my $nrt = scalar keys %{ $traces_by_template->{$clone}->{forward}->{traces} };
