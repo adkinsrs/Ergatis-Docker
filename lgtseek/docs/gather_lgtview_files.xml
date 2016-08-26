@@ -15,7 +15,7 @@
             <type>RunUnixCommand</type>
             <name>move LCA output</name>
             <state>incomplete</state>
-            <executable>/bin/mv</executable>
+            <executable>/bin/cp</executable>
             <arg>$;LGT_CLONE_OUT$; $;BLAST_M8_OUT$; $;METADATA_FILE$; $;OUTPUT_DIRECTORY$;/$;RUN_ID$;/</arg>
         </command>
     </commandSet>

@@ -56,9 +56,9 @@ done
 sed -i "s/###REFSEQ_MNT###/$refseq_mnt/" docker-compose.yml
 echo -e "----------------------------------------------------------------------------------------------------"
 
-# Lastly ask where the output data should be written to
+# Next, ask where the output data should be written to
 echo "----------------------------------------------------------------------------------------------------"
-echo -e "\nLastly, what directory should output be written to?  Note that if you close the Docker container, this output data may disappear, so it is recommended it be copied to a more permanent directory location.  If left blank, the output will be located at './output_data'"
+echo -e "\nLastly, what directory should LGTView output be written to?  Note that if you close the Docker container, this output data may disappear, so it is recommended it be copied to a more permanent directory location.  If left blank, the output will be located at './output_data'"
 echo -e "\nType 'quit' or 'q' to exit setup."
 read output_dir
 if [ $output_dir == 'q' ] || [ $output_dir == 'quit' ]; then
@@ -68,6 +68,74 @@ if [ -z $output_dir ]; then
     output_dir="./output_data"
 fi
 sed -i "s/###OUTPUT_DIR###/$output_dir/" docker-compose.yml
+echo -e "----------------------------------------------------------------------------------------------------"
+
+# Time to determine what Docker host will run the container
+echo -e "\n----------------------------------------------------------------------------------------------------"
+echo -e "\nWhat IP is the docker host machine on?  Leave blank if you are using local resources for the host (localhost)"
+echo -e "\nType 'quit' or 'q' to exit setup."
+read ip_address
+if [ $ip_address == 'q' ] || [ $ip_address == 'quit' ]; then
+    quit_setup
+fi
+if [ -z $ip_address ]; then
+    ip_address="localhost"
+fi
+sed -i "s/###IP_HOST###/$ip_address/" docker-compose.yml
+
+echo -e "----------------------------------------------------------------------------------------------------"
+
+# Next, igure out the BLAST db and if local/remote
+echo -e "\n----------------------------------------------------------------------------------------------------"
+echo -e "\nWhat database would you like to use for BLASTN querying?  Default is 'nt'"
+echo -e "\nType 'quit' or 'q' to exit setup."
+read blast_db
+if [ $blast_db == 'q' ] || [ $blast_db == 'quit' ]; then
+    quit_setup
+fi
+if [ -z $blast_db ]; then
+    blast_db="nt"
+fi
+
+echo -e "\nWould you like to query against a remote database from the NCBI servers?  Using a remote database saves you from having to have a pre-formatted database exist on your local machine, but is not recommended if you anticipate a lot of queries or have sensitive data. Please enter 'yes' (default) if you would like to use the remote NCBI database or 'no' if you would prefer querying against a local database"
+echo -e "\nType 'quit' or 'q' to exit setup."
+read y_n
+if [ $y_n == 'q' ] || [ $y_n == 'quit' ]; then
+    quit_setup
+fi
+if [ -z $y_n ]; then
+    remote=1
+fi
+
+while [[ $y_n !~ ^[Yy]$ ]] && [[ $y_n ! ^[Nn]$ ]]; do
+    echo -e "\nPlease enter 'yes' (Y) or 'no' (N)."
+    read y_n
+done
+
+if [[ $y_n =~ ^[Yy]$ ]]; then
+    remote=1
+else
+    remote=0
+fi
+
+if [$remote]; then
+    blast_path=''
+fi
+if [ ! $remote ]; then
+    echo -e "\nYou chose to use a local pre-formatted database.  Please provide the database path (leave out the database name)."
+    echo -e "\nType 'quit' or 'q' to exit setup."
+    read blast_path
+    while [ -z $blast_path ]; do
+        echo -e "\nThe directory path to the database is required.  Please enter one."
+        read blast_path
+    done
+fi
+
+sed -i "s/###BLAST_PATH###/$blast_path/" docker-compose.yml
+sed -i "s/###BLAST_DB###/$blast_db/" docker-compose.yml
+
+sed -i "s/###REMOTE###/$remote/" docker-compose.yml
+
 echo -e "----------------------------------------------------------------------------------------------------"
 
 
@@ -83,9 +151,17 @@ echo -e "\nGoing to build and run the Docker containers now......"
 
 docker-compose up -d
 
+echo -e "Docker container is done building!\n"
+echo -e "Next it's time to customize some things within the container\n";
+
+### TODO:
+# 1) Use Blast DB information to fix blast-plus template configs
+# 2) Use docker host IP in the blast_lgt_finder, blast2lca, and sam2lca template configs
+
+
 echo -e "\n----------------------------------------------------------------------------------------------------"
-echo "Docker containers done building and ready to go!"
-echo -e "\n In order to build the LGTSeek pipeline please point your browser to http://localhost:8080/pipeline_builder"
+echo -e "\n Docker container is ready for use!"
+echo -e "\n In order to build the LGTSeek pipeline please point your browser to http://${ip_address}:8080/pipeline_builder"
 echo -e "----------------------------------------------------------------------------------------------------"
 
 exit 0
