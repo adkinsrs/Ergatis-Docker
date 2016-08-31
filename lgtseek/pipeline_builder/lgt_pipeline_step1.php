@@ -29,8 +29,21 @@ include_once('header.php');
 							<td><input type='text' name="trefseq" size=80></td>
 						</tr>
 						<tr>
-							<td>SRA ID</td>
-							<td><input type='text' name="tsra" size=80></td>
+							<td>
+								Select input method
+								<table cellspacing="10">
+									<tr>
+										<td><input type="radio" name="rinput" value="sra" checked></td>
+										<td>SRA ID</td>
+										<td><input type='text' name="tsra" size=80></td>
+									</tr>
+									<tr>
+										<td><input type="radio" name="rinput" value="bam"></td>
+										<td>BAM file</td>
+										<td><input type='text' name="tbam" size=80></td>
+									</tr>
+								</table>
+							</td>
 						</tr>
 					</table>
 					<br>

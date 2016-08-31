@@ -28,14 +28,18 @@
 			$formValuesArr['log_file']['msg'] = "Could not create log file";
 		}
 
-		if ( isset($_POST['tsra']) ) {
+		if ( trim($_POST['rgene_algo'])=='sra' && isset($_POST['tsra']) ) {
 			$args .= "--sra_id " . trim($_POST['tsra']) . " ";
-			$formValuesArr['tsra']['error'] = 0;
-			$formValuesArr['tsra']['msg'] = "";
+			$formValuesArr['tinput']['error'] = 0;
+			$formValuesArr['tinput']['msg'] = "";
+		} elseif ( trim($_POST['rgene_algo']) == 'bam' && isset($_POST['tbam']) ) {
+			$args .= "--bam_input " . trim($_POST['tbam']) . " ";
+			$formValuesArr['tinput']['error'] = 0;
+			$formValuesArr['tinput']['msg'] = "";
 		} else {
 			$errFlag++;
-			$formValuesArr['tsra']['error'] = $errFlag;
-			$formValuesArr['tsar']['msg'] = "An SRA ID is required.";
+			$formValuesArr['tinput']['error'] = $errFlag;
+			$formValuesArr['tinput']['msg'] = "An SRA ID or BAM input path is required.";
 		}
 		if ( isset($_POST['tdonor']) && ! empty($_POST['tdonor']) ) {
 			$donor = trim($_POST['tdonor']);
