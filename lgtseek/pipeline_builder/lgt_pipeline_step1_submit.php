@@ -2,8 +2,8 @@
 	ini_set('display_errors', 'On');
 	error_reporting(E_ALL | E_STRICT);
 
-	$formFieldsArr = Array("output_dir" => "Output directory", "log_file" => "Log file");
-	$args = "-b ";	# Want to build indexes in pipeline by default
+	$formFieldsArr = Array("output_dir" => "Output directory", "log_file" => "Log file", "rinput" => "Input type", "trefseq" => "Refseq file");
+	$args = "--build_indexes ";	# Want to build indexes in pipeline by default
 	$local_dir = "/usr/local/scratch/pipeline_dir";
 	$ergatis_config = "/var/www/html/ergatis/cgi/ergatis.ini";
 	$errFlag = 0;
@@ -16,30 +16,32 @@
 
 		$dir = create_pipeline_dir($local_dir);
 		$formValuesArr['output_dir']['default'] = $dir;
+		$formValuesArr['output_dir']['error'] = 0;
 		$args .= "--output_directory $dir ";
 
+		$formValuesArr['log_file']['error'] = 0;
 		if (isset($dir)) {
 			$formValuesArr['log_file']['create'] = $dir."/create_lgt_pipeline.log";
 			$formValuesArr['log_file']['run'] = $dir."/run_lgt_pipeline.log";
 			$args .= "--log {$formValuesArr['log_file']['create']} ";
 		} else {
 			$errFlag++;
-			$formValuesArr['log_file']['error'] = 1;
+			$formValuesArr['log_file']['error'] = $errFlag;
 			$formValuesArr['log_file']['msg'] = "Could not create log file";
 		}
 
-		if ( trim($_POST['rgene_algo'])=='sra' && isset($_POST['tsra']) ) {
+		if ( trim($_POST['rinput'])=='sra' && ! empty($_POST['tsra']) ) {
 			$args .= "--sra_id " . trim($_POST['tsra']) . " ";
-			$formValuesArr['tinput']['error'] = 0;
-			$formValuesArr['tinput']['msg'] = "";
-		} elseif ( trim($_POST['rgene_algo']) == 'bam' && isset($_POST['tbam']) ) {
-			$args .= "--bam_input " . trim($_POST['tbam']) . " ";
-			$formValuesArr['tinput']['error'] = 0;
-			$formValuesArr['tinput']['msg'] = "";
+			$formValuesArr['rinput']['error'] = 0;
+		} elseif ( trim($_POST['rinput'])=='bam' && ! empty($_POST['tbam']) ) {
+			$bam = trim($_POST['tbam']);
+			$bam = adjust_paths($bam, $dir, "/mnt/input_data");
+			$args .= "--bam_input $bam ";
+			$formValuesArr['rinput']['error'] = 0;
 		} else {
 			$errFlag++;
-			$formValuesArr['tinput']['error'] = $errFlag;
-			$formValuesArr['tinput']['msg'] = "An SRA ID or BAM input path is required.";
+			$formValuesArr['rinput']['error'] = $errFlag;
+			$formValuesArr['rinput']['msg'] = "An SRA ID or BAM input path is required.";
 		}
 		if ( isset($_POST['tdonor']) && ! empty($_POST['tdonor']) ) {
 			$donor = trim($_POST['tdonor']);
@@ -57,7 +59,6 @@
 			$refseq = adjust_paths($refseq, $dir, "/mnt/input_data/refseq_ref");
 			$args .= "--refseq_reference $refseq ";
 			$formValuesArr['trefseq']['error'] = 0;
-			$formValuesArr['trefseq']['msg'] = "";
 		} else {
 			$errFlag++;
 			$formValuesArr['trefseq']['error'] = $errFlag;
@@ -73,8 +74,8 @@
 		echo "<br>";
 		echo "<h3>Hit the browser's Back button and resolve the following errors to proceed:</h3>";
 		echo "<ul>";
-		foreach ($formFieldsArr as $formField) {
-			if ($formValuesArr[$formField]['error'] > 0) {
+		foreach ($formFieldsArr as $formField => $val) {
+			if ( $formValuesArr[$formField]['error'] > 0) {
 				echo "<li><font color=\"red\">ERROR !! {$formValuesArr[$formField]['msg']}</font></li>";
 			}
 		}
