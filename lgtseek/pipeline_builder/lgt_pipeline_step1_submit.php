@@ -68,7 +68,16 @@
 	}
 
 	if ($errFlag == 0) {
-		$output = `/usr/bin/perl ./perl/create_lgt_pipeline_config.pl $args --template_directory /opt/ergatis/pipeline_templates`;
+		exec("/usr/bin/perl ./perl/create_lgt_pipeline_config.pl $args --template_directory /opt/ergatis/pipeline_templates", $exec_output, $exit_status);
+		#echo "/usr/bin/perl ./perl/create_lgt_pipeline_config.pl $args --template_directory /opt/ergatis/pipeline_templates";
+
+		if ($exit_status > 0) {
+			$output_string = implode("\n", $exec_output);
+			echo "<li><font color=\"red\">Error in Perl script.  Please contact system administrator!</font></li>";
+			echo "$output_string";
+			echo "<br>";
+			exit(1);
+		}
 	} else {
 		# Exact code as in lgt_pipeline_complete.php ... need to eliminate redundancy later
 		echo "<br>";

@@ -2,8 +2,8 @@ version: '2'
 services:
 
   ergatis:
-    image: lgtseek
-    #image: adkinsrs/lgtseek
+    #image: lgtseek
+    image: adkinsrs/lgtseek
     links:
       - mongo
     mem_limit: 5120000000
