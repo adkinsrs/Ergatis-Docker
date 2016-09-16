@@ -2,6 +2,7 @@ version: '2'
 services:
 
   ergatis:
+    #image: lgtseek
     image: adkinsrs/lgtseek
     links:
       - mongo

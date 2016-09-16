@@ -19,7 +19,7 @@ include_once('header.php');
 
                     # Start the pipeline, and provide a link
 					$pipeline_url = `/usr/bin/perl ./perl/run_pipeline.pl --layout $p_layout --config $p_config --repository_root $repo_root --ergatis_config $ergatis_config`;
-                    #echo "/usr/bin/perl ./perl/run_pipeline.pl --layout $p_layout --config $p_config --repository_root $repo_root --ergatis_config $ergatis_config";
+					#echo "/usr/bin/perl ./perl/run_pipeline.pl --layout $p_layout --config $p_config --repository_root $repo_root --ergatis_config $ergatis_config";
 					if (preg_match('/pipeline_id/',$pipeline_url,$matches)) {
 						$res = array();
 						$temp = preg_split("/\|/",$pipeline_url);

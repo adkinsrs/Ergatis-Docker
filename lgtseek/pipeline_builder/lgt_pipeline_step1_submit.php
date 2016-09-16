@@ -4,6 +4,7 @@
 
 	$formFieldsArr = Array("output_dir" => "Output directory", "log_file" => "Log file", "rinput" => "Input type", "trefseq" => "Refseq file");
 	$args = "--build_indexes ";	# Want to build indexes in pipeline by default
+	$args .= "--data_directory=/mnt/output_data "; # By default gather output for use in LGTView
 	$local_dir = "/usr/local/scratch/pipeline_dir";
 	$ergatis_config = "/var/www/html/ergatis/cgi/ergatis.ini";
 	$errFlag = 0;
