@@ -7,6 +7,7 @@ Note: This CHANGELOG is reflective of Docker versions, not the GitHub tags of th
   * This is an alternative to providing an SRA ID
 * Added new component - gather\_lgtview\_files
   * This will collect SRA metadata and downstream blast files in one location to easily pass to LGTView
+* Added headers to the blast\_lgt\_finder "by clone" output text file
 * Various code bug fixes
 
 ## v1.0
