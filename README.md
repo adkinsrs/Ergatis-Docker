@@ -1,5 +1,7 @@
 # Ergatis-Docker
 
+[instructions still incomplete]
+
 ## Purpose
 Docker container for the Ergatis web framework that runs various pipelines as their own Docker microservice containers
 
