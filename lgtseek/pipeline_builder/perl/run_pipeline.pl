@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Getopt::Long qw(:config no_ignore_case no_auto_abbrev pass_through);
-use lib ("/opt/projects/ergatis/lib/perl5");
+use lib ("/opt/ergatis/lib/perl5");
 use Ergatis::Pipeline;
 use Ergatis::SavedPipeline;
 use Ergatis::ConfigFile;
