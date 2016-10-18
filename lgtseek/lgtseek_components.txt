@@ -7,7 +7,7 @@ filter_dups_lc_seqs
 sam2lca
 sam2fasta
 split_multifasta
-ncbi-blastn
+blastn_plus
 concatenate_files
 blast_lgt_finder
 blast2lca
