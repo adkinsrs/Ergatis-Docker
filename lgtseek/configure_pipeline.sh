@@ -1,1 +1,0 @@
-perl /var/www/html/pipeline_builder/perl/create_lgt_pipeline_config.pl -p -s SRR491674 -d /mnt/input_data/donor_ref/Wolbachia_wRi.fna -r /mnt/input_data/refseq_ref/refseq.fna.test.list -t /opt/ergatis/pipeline_templates/ -o /usr/local/scratch/
