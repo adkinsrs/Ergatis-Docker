@@ -110,8 +110,10 @@ COPY log4j.properties /opt/workflow/
 
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts
-COPY wrapper_template.sh /opt/scripts
-COPY substitute_in_wrapper.sh /opt/scripts
+COPY create_wrappers.sh /opt/scripts
+COPY perl2wrapper_ergatis.pl /opt/scripts
+COPY python2wrapper_ergatis.pl /opt/scripts
+COPY julia2wrapper_ergatis.pl /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /
@@ -135,6 +137,6 @@ ONBUILD COPY pipeline_templates/ /opt/ergatis/pipeline_templates/
 ONBUILD RUN find /opt/ergatis/pipeline_templates -type f -exec /usr/bin/perl -pi -e 's/\$;NODISTRIB\$;\s?=\s?0/\$;NODISTRIB\$;=1/g' {} \;
 ONBUILD COPY software.config /opt/ergatis/.
 
-# Build wrapper scripts for each perl script in /opt/ergatis/bin
-ONBUILD COPY exec_scripts.txt /tmp/.
-ONBUILD RUN /opt/scripts/substitute_in_wrapper.sh
+# Create the wrappers for bin executables
+ONBUILD RUN /opt/scripts/create_wrappers.sh /opt/ergatis
+
