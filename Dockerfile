@@ -138,5 +138,5 @@ ONBUILD RUN find /opt/ergatis/pipeline_templates -type f -exec /usr/bin/perl -pi
 ONBUILD COPY software.config /opt/ergatis/.
 
 # Create the wrappers for bin executables
-ONBUILD RUN /opt/scripts/create_wrappers.sh /opt/ergatis
+ONBUILD RUN sh /opt/scripts/create_wrappers.sh /opt/ergatis
 
