@@ -49,7 +49,7 @@ sub get_julia_bins{
     my($strip_fname) = ($fname =~ /(.*)\.jl$/);
 	
 	# Open wrapper for writing to.
-	open WRAPPER, "+>bin/$strip_fname" or die "Can't open file bin/$strip_fname\n";
+	open WRAPPER, "+>$instdir/bin/$strip_fname" or die "Can't open file $instdir/bin/$strip_fname\n";
 	my ($shell_args)  = q/"$@"/;
 	my $addbuffer = $envbuffer;
     print WRAPPER <<_END_WRAPPER_;
@@ -79,4 +79,4 @@ _END_WRAPPER_
 }
 
 
-return 1;
+1;
