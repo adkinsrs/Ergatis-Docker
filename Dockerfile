@@ -12,7 +12,10 @@ EXPOSE 80
 #--------------------------------------------------------------------------------
 # BASICS
 
-RUN apt-get update && apt-get install -y --no-install-recommands \
+# 1) Install general things
+# 2) Install Perl things
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	apache2 \
 	autoconf \
 	build-essential \
@@ -27,13 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommands \
 	wget \
 	zip \
 	zlib1g-dev \
-	&& apt-get clean autoclean \
-	&& apt-get autoremove -y
-
-#--------------------------------------------------------------------------------
-# PERL for ergatis
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
 	libcpan-meta-perl \
 	libcdb-file-perl \
 	libcgi-session-perl \
@@ -52,7 +48,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libxml-writer-perl \
 	libxml-libxml-perl \
 	&& apt-get clean autoclean \
-	&& apt-get autoremove -y
+	&& apt-get autoremove -y \
+	&& rm -rf /var/lib/apt/lists/*
 
 COPY deb/lib*.deb /tmp/
 
@@ -86,7 +83,7 @@ RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
 	&& mkdir /usr/local/scratch/workflow/id_repository && chmod 777 /usr/local/scratch/workflow/id_repository \
 	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
 	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
-	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts
+	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts \
 	&& mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 
 #--------------------------------------------------------------------------------
@@ -124,12 +121,12 @@ ONBUILD RUN mkdir /var/www/html/pipeline_builder
 ONBUILD COPY pipeline_builder/ /var/www/html/pipeline_builder/
 
 # Set up Ergatis application area
-ONBUILD RUN mkdir /opt/ergatis/bin
+ONBUILD RUN mkdir /opt/ergatis/bin \
+	&& mkdir /opt/ergatis/docs \
+	&& mkdir /opt/ergatis/pipeline_templates
 ONBUILD COPY bin/ /opt/ergatis/bin/
-ONBUILD RUN mkdir /opt/ergatis/docs
 ONBUILD COPY docs/ /opt/ergatis/docs/
 ONBUILD COPY lib/perl5 /opt/ergatis/lib/perl5/
-ONBUILD RUN mkdir /opt/ergatis/pipeline_templates
 ONBUILD COPY pipeline_templates/ /opt/ergatis/pipeline_templates/
 ONBUILD RUN find /opt/ergatis/pipeline_templates -type f -exec /usr/bin/perl -pi -e 's/\$;NODISTRIB\$;\s?=\s?0/\$;NODISTRIB\$;=1/g' {} \;
 ONBUILD COPY software.config /opt/ergatis/.
