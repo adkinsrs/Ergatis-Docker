@@ -12,7 +12,7 @@ EXPOSE 80
 #--------------------------------------------------------------------------------
 # BASICS
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommands \
 	apache2 \
 	autoconf \
 	build-essential \
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 	dh-make-perl \
 	git \
 	libapache2-mod-php5 \
-	ncbi-blast+ \	
+	ncbi-blast+ \
 	php5 \
 	vim \
 	wget \
@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 #--------------------------------------------------------------------------------
 # PERL for ergatis
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
 	libcpan-meta-perl \
 	libcdb-file-perl \
 	libcgi-session-perl \
@@ -59,16 +59,14 @@ COPY deb/lib*.deb /tmp/
 RUN dpkg -i \
 	/tmp/libfile-mirror-perl_0.10-1_all.deb \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb \
-  && rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
+	&& rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb
 
 # Make various directories.
 # /opt/packages is where software installs will be placed or symlinked to
-# /opt/projects is where Ergatis repository roots will be kept
 # /var/www/html is where the Ergatis site and pipeline building UI will be
 RUN chmod 777 /opt \
 	&& mkdir /opt/packages && chmod 777 /opt/packages \
-#	&& mkdir /opt/projects && chmod 777 /opt/projects \
 	&& mkdir -p /var/www/html && chmod 777 /var/www/html
 
 #--------------------------------------------------------------------------------
@@ -89,8 +87,7 @@ RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
 	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
 	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
 	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts
-
-RUN mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
+	&& mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
 
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
