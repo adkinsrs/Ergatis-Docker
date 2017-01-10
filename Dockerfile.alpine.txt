@@ -3,7 +3,7 @@
 # Based on Ubuntu
 ############################################################
 
-FROM adkinsrs/workflow
+FROM adkinsrs/workflow:alpine
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
@@ -15,7 +15,7 @@ EXPOSE 80
 # 1) Install general things
 # 2) Install Perl things
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk add --no-cache \
 	apache2 \
 	autoconf \
 	build-essential \
@@ -45,10 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	libxml-rss-perl \
 	libxml-twig-perl \
 	libxml-writer-perl \
-	libxml-libxml-perl \
-	&& apt-get clean autoclean \
-	&& apt-get autoremove -y \
-	&& rm -rf /var/lib/apt/lists/*
+	libxml-libxml-perl
 
 COPY deb/lib*.deb /tmp/
 
