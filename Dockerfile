@@ -23,7 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	dh-make-perl \
 	git \
 	libapache2-mod-php5 \
-	ncbi-blast+ \
 	php5 \
 	vim \
 	wget \
