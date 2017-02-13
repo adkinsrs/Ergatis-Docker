@@ -49,6 +49,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	&& apt-get autoremove -y \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN cpanm --force Term::ProgressBar
+
 COPY deb/lib*.deb /tmp/
 
 RUN dpkg -i \
