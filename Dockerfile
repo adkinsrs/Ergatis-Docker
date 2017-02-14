@@ -76,15 +76,15 @@ RUN a2enmod php5
 #--------------------------------------------------------------------------------
 # SCRATCH
 
-RUN mkdir -p /usr/local/scratch && chmod 777 /usr/local/scratch \
-	&& mkdir /usr/local/scratch/ergatis && chmod 777 /usr/local/scratch/ergatis \
-	&& mkdir /usr/local/scratch/ergatis/archival && chmod 777 /usr/local/scratch/ergatis/archival \
-	&& mkdir /usr/local/scratch/workflow && chmod 777 /usr/local/scratch/workflow \
-	&& mkdir /usr/local/scratch/workflow/id_repository && chmod 777 /usr/local/scratch/workflow/id_repository \
-	&& mkdir /usr/local/scratch/workflow/runtime && chmod 777 /usr/local/scratch/workflow/runtime \
-	&& mkdir /usr/local/scratch/workflow/runtime/pipeline && chmod 777 /usr/local/scratch/workflow/runtime/pipeline \
-	&& mkdir /usr/local/scratch/workflow/scripts && chmod 777 /usr/local/scratch/workflow/scripts \
-	&& mkdir /tmp/pipelines_building && chmod 777 /tmp/pipelines_building
+RUN mkdir -m 0777 -p /usr/local/scratch \
+	&& mkdir -m 0777 /usr/local/scratch/ergatis \
+	&& mkdir -m 0777 /usr/local/scratch/ergatis/archival \
+	&& mkdir -m 0777 /usr/local/scratch/workflow  \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/id_repository  \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/runtime \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/runtime/pipeline \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/scripts \
+	&& mkdir -m 0777 /tmp/pipelines_building 
 
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
