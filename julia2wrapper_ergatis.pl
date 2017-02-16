@@ -76,6 +76,8 @@ export PERL5LIB=$instdir/lib/perl5/
 _END_WRAPPER_
    ;
    close WRAPPER;
+
+   chmod 0555 "$instdir/bin/$strip_fname";
 }
 
 
