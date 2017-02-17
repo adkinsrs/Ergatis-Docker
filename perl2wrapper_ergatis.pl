@@ -76,7 +76,7 @@ _END_WRAPPER_
    ;
    close WRAPPER;
 
-   chmod 0555 "$instdir/bin/$strip_fname";
+   chmod 0555, "$instdir/bin/$strip_fname";
 }
 
 1;
