@@ -46,8 +46,8 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	libxml-twig-perl \
 	libxml-writer-perl \
 	libxml-libxml-perl \
-	&& apt-get clean autoclean \
-	&& apt-get autoremove -y \
+	&& apt-get -q clean autoclean \
+	&& apt-get -q autoremove -y \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN cpanm --force Term::ProgressBar
