@@ -15,7 +15,7 @@ EXPOSE 80
 # 1) Install general things
 # 2) Install Perl things
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	apache2 \
 	autoconf \
 	build-essential \
