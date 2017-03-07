@@ -130,7 +130,7 @@ ONBUILD COPY docs/ /opt/ergatis/docs/
 ONBUILD COPY lib/perl5 /opt/ergatis/lib/perl5/
 ONBUILD COPY pipeline_templates/ /opt/ergatis/pipeline_templates/
 ONBUILD RUN num_cores=$(grep -c ^processor /proc/cpuinfo) \
-	&& find /opt/ergatis/pipeline_templates -type f -exec /usr/bin/perl -pi -e 's/\$;NODISTRIB\$;\s?=\s?0/\$;NODISTRIB\$;='${num_cores'/g' {} \;
+	&& find /opt/ergatis/pipeline_templates -type f -exec /usr/bin/perl -pi -e 's/\$;NODISTRIB\$;\s?=\s?0/\$;NODISTRIB\$;='$num_cores'/g' {} \;
 ONBUILD COPY software.config /opt/ergatis/.
 
 # Create the wrappers for bin executables
