@@ -28,4 +28,3 @@ For both the Ergatis and pipeline images, the "latest" tag will essentially be t
 
 ## Future improvements (or TODOs)
 * Figure out the grid/cloud management system.  Internally we use Oracle Grid Engine to farm out jobs to various grid nodes.  Will probably have to investigate Docker Swarm as well as Amazon ECS.
-* Make Workflow into its own Docker image, then use that via Docker Swarm to parallelize grid jobs.  Relates to the first bullet point

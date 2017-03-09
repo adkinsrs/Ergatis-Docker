@@ -3,7 +3,7 @@
 # Based on Ubuntu
 ############################################################
 
-FROM adkinsrs/workflow
+FROM adkinsrs/workflow:3.2.0
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
@@ -114,23 +114,3 @@ COPY julia2wrapper_ergatis.pl /opt/scripts
 WORKDIR /
 # ... and start apache
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
-#--------------------------------------------------------------------------------
-# ONBUILD SETUP FOR PIPELINES (takes place in context with the inheriting image)
-
-# Set up the pipeline builder UI site
-ONBUILD RUN mkdir /var/www/html/pipeline_builder
-ONBUILD COPY pipeline_builder/ /var/www/html/pipeline_builder/
-
-# Set up Ergatis application area
-ONBUILD RUN mkdir /opt/ergatis/bin \
-	&& mkdir /opt/ergatis/docs \
-	&& mkdir /opt/ergatis/pipeline_templates
-ONBUILD COPY bin/ /opt/ergatis/bin/
-ONBUILD COPY docs/ /opt/ergatis/docs/
-ONBUILD COPY lib/perl5 /opt/ergatis/lib/perl5/
-ONBUILD COPY pipeline_templates/ /opt/ergatis/pipeline_templates/
-ONBUILD COPY software.config /opt/ergatis/.
-
-# Create the wrappers for bin executables
-ONBUILD RUN sh /opt/scripts/create_wrappers.sh /opt/ergatis
-
