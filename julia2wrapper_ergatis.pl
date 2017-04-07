@@ -1,40 +1,31 @@
-#!/usr/bin/env perl
 use File::Basename;
 use File::Find;
 
-use strict;
-use warnings;
-
-# Run script independently but allow to be used as a module
-get_julia_bins() unless caller();
-
 sub get_julia_bins{
-    my $instdir='';
-	my $workflowdocsdir='';
-	my $schemadocsdir='';
-	my $fname = '';
-
+    my($instdir,$workflowdocsdir,$schemadocsdir);
+    my(@binfiles);
+    my($wrapper_str);
     my $julia_path = `which julia`;  ## can be overwritten below
- 	chomp $julia_path;   
+    chomp $julia_path; 
 
     foreach my $arg (@ARGV){
         if($arg =~ /INSTALL_BASE/){
             ($instdir) = ($arg =~ /INSTALL_BASE=(.*)/);
         }
-        elsif($arg =~ /WORKFLOW_DOCS_DIR/){
+        if($arg =~ /WORKFLOW_DOCS_DIR/){
             ($workflowdocsdir) = ($arg =~ /WORKFLOW_DOCS_DIR=(.*)/);
         }
-        elsif($arg =~ /SCHEMA_DOCS_DIR/){
+        if($arg =~ /SCHEMA_DOCS_DIR/){
             ($schemadocsdir) = ($arg =~ /SCHEMA_DOCS_DIR=(.*)/);
         }
-        elsif($arg =~ /JULIA_PATH/){
+        if($arg =~ /JULIA_PATH/){
             ($julia_path) = ($arg =~ /JULIA_PATH=(.*)/);
         }
-		else {
-			$fname = $arg;
-			chomp $fname;
-		}
     }
+
+    open FILE, 'MANIFEST' or die "MANIFEST is missing!\n";
+    open SYMS, "+>README.symlinks" or die "Can't save symlinks for silly sadmins";
+    print SYMS "#Copy or symlink the following shell scripts into a standard area\n";
 
     my $envbuffer;
     my $env_hash = {'WORKFLOW_DOCS_DIR' => "$workflowdocsdir",
@@ -46,13 +37,16 @@ sub get_julia_bins{
 	$envbuffer .= "if [ -z \"\$$key\" ]\nthen\n    $key=$env_hash->{$key}\nexport $key\nfi\n";
     }
 
-    my($strip_fname) = ($fname =~ /(.*)\.jl$/);
-	
-	# Open wrapper for writing to.
-	open WRAPPER, "+>$instdir/bin/$strip_fname" or die "Can't open file $instdir/bin/$strip_fname\n";
-	my ($shell_args)  = q/"$@"/;
-	my $addbuffer = $envbuffer;
-    print WRAPPER <<_END_WRAPPER_;
+
+    while(my $line = <FILE>){
+	chomp $line;
+	if($line =~ m|julia/[\w-]+\.jl| ){
+	    my($fname) = basename($line);
+	    my($strip_fname) = ($fname =~ /(.*)\.jl$/);
+	    open WRAPPER, "+>bin/$strip_fname" or die "Can't open file bin/$strip_fname\n";
+	    my($shell_args)  = q/"$@"/;
+	    my $addbuffer = $envbuffer;
+            print WRAPPER <<_END_WRAPPER_;
 #!/bin/sh
 $addbuffer
 
@@ -71,14 +65,25 @@ export PERL_MOD_DIR
 
 export PERL5LIB=$instdir/lib/perl5/
 
+export JULIA_PKGDIR=/usr/local/packages/julia-0.5.0/share/julia/site
+
     $julia_path $instdir/bin/$fname $shell_args    
 
 _END_WRAPPER_
    ;
-   close WRAPPER;
-
-   chmod 0555, "$instdir/bin/$strip_fname";
+	    close WRAPPER;
+	    
+	    print SYMS "$instdir/bin/$strip_fname\n";
+	    
+	    push @binfiles,"$line";
+	    push @binfiles,"bin/$strip_fname";
+	    $wrapper_str .= "bin/$strip_fname ";
+	}
+    }
+    close SYMS;
+    close FILE;
+    return (\@binfiles,$wrapper_str);
 }
 
 
-1;
+return 1;

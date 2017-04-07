@@ -14,6 +14,12 @@ EXPOSE 80
 
 # 1) Install general things
 # 2) Install Perl things
+# 3) Install Debian things
+# 4) Make various directories.
+### /opt/packages is where software installs will be placed or symlinked to
+### /var/www/html is where the Ergatis site and pipeline building UI will be
+
+COPY deb/lib*.deb /tmp/
 
 RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	apache2 \
@@ -48,22 +54,14 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	libxml-libxml-perl \
 	&& apt-get -q clean autoclean \
 	&& apt-get -q autoremove -y \
-	&& rm -rf /var/lib/apt/lists/*
-
-RUN cpanm --force Term::ProgressBar
-
-COPY deb/lib*.deb /tmp/
-
-RUN dpkg -i \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& cpanm --force Term::ProgressBar \
+	&& dpkg -i \
 	/tmp/libfile-mirror-perl_0.10-1_all.deb \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb \
 	&& rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
-	/tmp/liblog-cabin-perl_0.06-1_all.deb
-
-# Make various directories.
-# /opt/packages is where software installs will be placed or symlinked to
-# /var/www/html is where the Ergatis site and pipeline building UI will be
-RUN chmod 777 /opt \
+	/tmp/liblog-cabin-perl_0.06-1_all.deb \
+	&& chmod 777 /opt \
 	&& mkdir /opt/packages && chmod 777 /opt/packages \
 	&& mkdir -p /var/www/html && chmod 777 /var/www/html
 
