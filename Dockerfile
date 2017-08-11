@@ -55,7 +55,7 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	&& apt-get -q clean autoclean \
 	&& apt-get -q autoremove -y \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& cpanm --force Term::ProgressBar XML::Writer \
+	&& cpanm --force Term::ProgressBar \
 	&& dpkg -i \
 	/tmp/libfile-mirror-perl_0.10-1_all.deb \
 	/tmp/liblog-cabin-perl_0.06-1_all.deb \
