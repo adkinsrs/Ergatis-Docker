@@ -42,7 +42,7 @@ use warnings;
 use Carp;
 use Sys::Hostname;
 use IO::File;
-use Ergatis::Utils qw(build_twig create_progress_bar update_progress_bar handle_component_status_changes);
+use Ergatis::Utils qw(build_twig create_progress_bar update_progress_bar handle_component_status_changes report_failure_info);
 
 umask(0000);
 
@@ -566,29 +566,42 @@ umask(0000);
        # If 'block' is set to 1, wait for pipeline to return non-running state
         my $p_state = '';
         my $running_components = ();
-        my $component_list = ();
-		my %prev_component_states = ();
+        my $component_list = build_twig($self->{path});
+        my %prev_component_states = ();
+        my $elapsed_time = 0;
+        my $timeout_flag = 0;
         do {
             $p_state = $self->pipeline_state;
-   			# First iteration will be undefined... populate hash with previous states
-			if (defined $component_list) {
-                foreach my $component (keys %$component_list) {
-                    $prev_component_states{$component} = $component_list->{$component}->{'state'};
-                }
-			}
+            # Populate hash with previous states
+            # First iteration will have state 'incomplete' for each component
+            foreach my $component (keys %$component_list) {
+                $prev_component_states{$component} = $component_list->{$component}->{'state'};
+            }
             $component_list = build_twig($self->{path});
-			if ($args{show_progress}) {
-			    update_progress_bar($p_bar, $component_list);
-		    } else {
-				if ( %prev_component_states ) {
+            if ($args{show_progress}) {
+                update_progress_bar($p_bar, $component_list);
+            } else {
+                if ( %prev_component_states ) {
                     handle_component_status_changes($component_list, \%prev_component_states);
                 }
-		    }
-            sleep 60 if ( $p_state =~ /(running|pending|waiting|incomplete)/ );
-        } while ( $p_state =~ /(running|pending|waiting|incomplete)/ );
+            }
+            if ( $p_state =~ /(running|pending|waiting|incomplete)/ ) {
+                # If pipeline running time (in secs) exceeds time limit (in hrs), kill the run
+                if ($args{'time_limit'}) {
+                    $timeout_flag = 1 if ($elapsed_time > $args{'time_limit]'}*3600);
+                }
+                sleep 60;
+                $elapsed_time += 60;
+            };
+        } while ( $p_state =~ /(running|pending|waiting|incomplete)/ && !$timeout_flag );
 
         # If end-state is complete, return 1.  Otherwise return 0
         return 1 if ($p_state eq 'complete');
+        if ($p_state =~ /(failed|error)/ or $timeout_flag) {
+            # Return a hash of useful diagnostics
+            $self->{diagnostics} = report_failure_info($self->{path}, $self->{id});
+            print STDERR "Pipeline running time exceed max time limit.  Pipeline killed\n" if $timeout_flag;
+        }
         return 0;
     }
 
@@ -654,11 +667,11 @@ umask(0000);
           '/usr/local/devel/ANNOTATION/EGC_utilities/WISE2/wise2.2.0/wisecfg';
 
         ## for local data placement
-		if (defined $args{ergatis_cfg}->val( 'grid', 'vappio_root' )){
+        if (defined $args{ergatis_cfg}->val( 'grid', 'vappio_root' )){
             $ENV{vappio_root} = $args{ergatis_cfg}->val( 'grid', 'vappio_root' );
             $ENV{vappio_data_placement} =
                 $args{ergatis_cfg}->val( 'grid', 'vappio_data_placement' ); 
-		}
+        }
         $ENV{PERL5LIB} =
           "/usr/local/packages/perllib/x86_64-linux-thread-multi:$ENV{PERL5LIB}" if (defined $ENV{PERL5LIB});
 
