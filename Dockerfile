@@ -19,21 +19,17 @@ EXPOSE 80
 ### /opt/packages is where software installs will be placed or symlinked to
 ### /var/www/html is where the Ergatis site and pipeline building UI will be
 
-COPY deb/lib*.deb /tmp/
-
 RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
-	apache2 \
 	autoconf \
 	build-essential \
 	cpanminus \
 	dh-make-perl \
 	git \
-	libapache2-mod-php5 \
 	perl \
 	php5 \
 	vim \
 	wget \
-	zip \
+	zip unzip \
 	zlib1g-dev \
 	libcpan-meta-perl \
 	libcdb-file-perl \
@@ -55,22 +51,13 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	&& apt-get -q clean autoclean \
 	&& apt-get -q autoremove -y \
 	&& rm -rf /var/lib/apt/lists/* \
-	&& cpanm --force Term::ProgressBar \
-	&& dpkg -i \
-	/tmp/libfile-mirror-perl_0.10-1_all.deb \
-	/tmp/liblog-cabin-perl_0.06-1_all.deb \
-	&& rm /tmp/libfile-mirror-perl_0.10-1_all.deb \
-	/tmp/liblog-cabin-perl_0.06-1_all.deb \
+	&& cpanm --force \
+	File::Mirror \
+	Log::Cabin \
+	Term::ProgressBar \
 	&& chmod 777 /opt \
 	&& mkdir /opt/packages && chmod 777 /opt/packages \
 	&& mkdir -p /var/www/html && chmod 777 /var/www/html
-
-#--------------------------------------------------------------------------------
-# APACHE SETUP
-COPY 000-default.conf /etc/apache2/sites-enabled/.
-COPY ergatis.conf /etc/apache2/conf-enabled/.
-RUN a2enmod cgid
-RUN a2enmod php5
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -110,5 +97,4 @@ COPY julia2wrapper_ergatis.pl /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /
-# ... and start apache
-CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+CMD ["/bin/bash"]

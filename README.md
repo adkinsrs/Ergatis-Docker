@@ -25,6 +25,7 @@ Each pipeline folder in that repository will contain a README on how to start th
 ### Tag naming conventions
 For both the Ergatis and pipeline images, the "latest" tag will essentially be the equivalent of the development tag.  Formal release tags will have a version number (v1.0, v1.1, etc.)
 
+There is a special tag (adkinsrs/ergatis:apache) that contains Ergatis with Apache installed.  This is useful for viewing the Ergatis UI in a web browser. Beginning with the v1.3 tag, Apache was removed from the Ergatis image, and can be used as a service in docker\-compose.
 
 ## Future improvements (or TODOs)
 * Figure out the grid/cloud management system.  Internally we use Oracle Grid Engine to farm out jobs to various grid nodes.  Will probably have to investigate Docker Swarm as well as Amazon ECS.
