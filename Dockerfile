@@ -7,8 +7,6 @@ FROM adkinsrs/workflow:3.2.0
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
-EXPOSE 80
-
 #--------------------------------------------------------------------------------
 # BASICS
 
@@ -26,7 +24,6 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	dh-make-perl \
 	git \
 	perl \
-	php5 \
 	vim \
 	wget \
 	zip unzip \
@@ -41,7 +38,6 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	libio-tee-perl \
 	libjson-perl \
 	liblog-log4perl-perl \
-	libmath-combinatorics-perl \
 	libperlio-gzip-perl \
 	libxml-parser-perl \
 	libxml-rss-perl \
@@ -56,8 +52,7 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	Log::Cabin \
 	Term::ProgressBar \
 	&& chmod 777 /opt \
-	&& mkdir /opt/packages && chmod 777 /opt/packages \
-	&& mkdir -p /var/www/html && chmod 777 /var/www/html
+	&& mkdir /opt/packages && chmod 777 /opt/packages
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -80,13 +75,11 @@ RUN mkdir -p /opt/ergatis/lib/
 COPY lib/ /opt/ergatis/lib/
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-# Set up site
-RUN mkdir /var/www/html/ergatis
-COPY htdocs/ /var/www/html/ergatis/
-COPY ergatis.ini /var/www/html/ergatis/cgi/
-
 # Change the level of debugging
 COPY log4j.properties /opt/workflow/
+
+# Add Ergatis.ini config file
+COPY ergatis.ini /opt/ergatis
 
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts

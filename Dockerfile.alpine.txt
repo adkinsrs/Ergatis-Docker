@@ -7,8 +7,6 @@ FROM adkinsrs/workflow:3.2.0-alpine
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
-EXPOSE 80
-
 #--------------------------------------------------------------------------------
 # BASICS
 
@@ -35,28 +33,23 @@ RUN apk add --no-cache \
 	perl-xml-rss \
 	perl-xml-twig \
 	perl-xml-writer \
-	php5 \
 	vim \
 	wget \
 	zip unzip \
-	zlib-dev
-
-RUN cpanm --force \
+	zlib-dev \
+&& cpanm --force \
 	#dh-make-perl \
 	CDB_File \
 	File::Mirror \
 	File::Spec \
 	Log::Cabin \
-	Math::Combinatorics \
 	PerlIO::gzip \
 	Term::ProgressBar
 
 # Make various directories.
 # /opt/packages is where software installs will be placed or symlinked to
-# /var/www/html is where the Ergatis site and pipeline building UI will be
 RUN chmod 777 /opt \
-       && mkdir /opt/packages && chmod 777 /opt/packages \
-       && mkdir -p /var/www/html && chmod 777 /var/www/html
+       && mkdir /opt/packages && chmod 777 /opt/packages
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -79,13 +72,11 @@ RUN mkdir -p /opt/ergatis/lib/
 COPY lib/ /opt/ergatis/lib/
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-# Set up site
-RUN mkdir /var/www/html/ergatis
-COPY htdocs/ /var/www/html/ergatis/
-COPY ergatis.ini /var/www/html/ergatis/cgi/
-
 # Change the level of debugging
 COPY log4j.properties /opt/workflow/
+
+# Add Ergatis.ini config file
+COPY ergatis.ini /opt/ergatis
 
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts
