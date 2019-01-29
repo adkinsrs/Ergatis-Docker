@@ -1,9 +1,11 @@
 ###########################################################
-# Dockerfile to build container lgtseek core image
+# Dockerfile to build Ergatis directory structure and install libraries
+# Has no function as an independent image
 # Based on Ubuntu
 ############################################################
 
-FROM adkinsrs/workflow:3.2.0
+#FROM adkinsrs/workflow:3.2.0
+FROM ubuntu:trusty
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
@@ -21,6 +23,7 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	autoconf \
 	build-essential \
 	cpanminus \
+	curl \
 	dh-make-perl \
 	git \
 	perl \
@@ -52,7 +55,8 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	Log::Cabin \
 	Term::ProgressBar \
 	&& chmod 777 /opt \
-	&& mkdir /opt/packages && chmod 777 /opt/packages
+	&& mkdir /opt/packages && chmod 777 /opt/packages \
+	&& mkdir -p /var/www/html/config && chmod 777 /var/www/html/config
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -71,22 +75,14 @@ RUN mkdir -m 0777 -p /usr/local/scratch \
 # ERGATIS SETUP
 
 # Set up lib directory
-RUN mkdir -p /opt/ergatis/lib/
-COPY lib/ /opt/ergatis/lib/
+RUN mkdir -p /opt/ergatis/lib/perl5
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-# Change the level of debugging
-COPY log4j.properties /opt/workflow/
-
 # Add Ergatis.ini config file
-COPY ergatis.ini /opt/ergatis
+COPY ergatis.ini /var/www/html/config/
 
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts
-COPY create_wrappers.sh /opt/scripts
-COPY perl2wrapper_ergatis.pl /opt/scripts
-COPY python2wrapper_ergatis.pl /opt/scripts
-COPY julia2wrapper_ergatis.pl /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /

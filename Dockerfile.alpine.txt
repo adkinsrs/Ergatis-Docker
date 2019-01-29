@@ -1,9 +1,11 @@
 ###########################################################
-# Dockerfile to build Ergatis core image
+# Dockerfile to build Ergatis directory structure and install libraries
+# Has no function as an independent image
 # Based on Alpine Linux
 ############################################################
 
-FROM adkinsrs/workflow:3.2.0-alpine
+#FROM adkinsrs/workflow:3.2.0-alpine
+FROM alpine:3.8
 
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 
@@ -16,6 +18,7 @@ MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 RUN apk add --no-cache \
 	autoconf \
 	build-base \
+	curl \
 	git \
 	perl \
 	perl-app-cpanminus \
@@ -48,8 +51,8 @@ RUN apk add --no-cache \
 
 # Make various directories.
 # /opt/packages is where software installs will be placed or symlinked to
-RUN chmod 777 /opt \
-       && mkdir /opt/packages && chmod 777 /opt/packages
+RUN mkdir -p /opt/packages && chmod 777 /opt/packages \
+       && mkdir -p /var/www/html/config && chmod 777 /var/www/html/config
 
 #--------------------------------------------------------------------------------
 # SCRATCH
@@ -68,22 +71,14 @@ RUN mkdir -m 0777 -p /usr/local/scratch \
 # ERGATIS SETUP
 
 # Set up lib directory
-RUN mkdir -p /opt/ergatis/lib/
-COPY lib/ /opt/ergatis/lib/
+RUN mkdir -p /opt/ergatis/lib/perl5
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-# Change the level of debugging
-COPY log4j.properties /opt/workflow/
-
 # Add Ergatis.ini config file
-COPY ergatis.ini /opt/ergatis
+COPY ergatis.ini /var/www/html/config
 
 # Set up area to store scripts
 RUN mkdir -p /opt/scripts
-COPY create_wrappers.sh /opt/scripts
-COPY perl2wrapper_ergatis.pl /opt/scripts
-COPY python2wrapper_ergatis.pl /opt/scripts
-COPY julia2wrapper_ergatis.pl /opt/scripts
 
 # Lastly, set working directory to root directory
 WORKDIR /

@@ -1,9 +1,7 @@
 # Ergatis-Docker
 
-[instructions still incomplete]
-
 ## Purpose
-Docker container for the Ergatis web framework that runs various pipelines as their own Docker microservice containers
+This image is used as a jumping off point for building specific Ergatis pipelines.  Libraries, packages, and directories that are shared by most, if not all, of the various Ergatis pipelines, are installed here.  Since this image does not contain the Ergatis web code (see adkinsrs/ergatis-apache), this image has no real function as a process, and as such, just runs /bin/bash as its process.
 
 ## General information
 
@@ -27,5 +25,3 @@ For both the Ergatis and pipeline images, the "latest" tag will essentially be t
 
 There is a special tag (adkinsrs/ergatis:apache) that contains Ergatis with Apache installed.  This is useful for viewing the Ergatis UI in a web browser. Beginning with the v1.3 tag, Apache was removed from the Ergatis image, and can be used as a service in docker\-compose.
 
-## Future improvements (or TODOs)
-* Figure out the grid/cloud management system.  Internally we use Oracle Grid Engine to farm out jobs to various grid nodes.  Will probably have to investigate Docker Swarm as well as Amazon ECS.
