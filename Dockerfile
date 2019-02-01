@@ -84,7 +84,6 @@ EXPOSE 80
 
 # Set up lib directory
 RUN mkdir -p /opt/ergatis/lib/perl5
-COPY lib/ /opt/ergatis/lib/
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
 ENTRYPOINT ["apache2"]
