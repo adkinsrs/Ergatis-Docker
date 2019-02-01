@@ -1,0 +1,41 @@
+###########################################################
+# Dockerfile to build Ergatis directory structure
+# Has no function as an independent image
+# Based on Ubuntu
+############################################################
+
+FROM busybox
+
+MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
+
+#--------------------------------------------------------------------------------
+# SCRATCH
+
+RUN mkdir -m 0777 -p /usr/local/scratch \
+	&& mkdir -m 0777 /usr/local/scratch/ergatis \
+	&& mkdir -m 0777 /usr/local/scratch/ergatis/archival \
+	&& mkdir -m 0777 /usr/local/scratch/workflow  \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/id_repository  \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/runtime \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/runtime/pipeline \
+	&& mkdir -m 0777 /usr/local/scratch/workflow/scripts \
+	&& mkdir -m 0777 /tmp/pipelines_building 
+
+#--------------------------------------------------------------------------------
+# REPOSITORY ROOT SETUP
+
+RUN mkdir -p /opt/projects/repository \
+	&& mkdir -m 0777 /opt/projects/repository/output_repository \
+	&& mkdir -m 0777 /opt/projects/repository/workflow \
+	&& mkdir -m 0777 /opt/projects/repository/workflow/lock_files \
+	&& mkdir -m 0777 /opt/projects/repository/workflow/project_id_repository \
+	&& mkdir -m 0777 /opt/projects/repository/workflow/runtime \
+	&& mkdir -m 0777 /opt/projects/repository/workflow/runtime/pipeline \
+	&& touch /opt/projects/repository/workflow/project_id_repository/valid_id_repository \
+	&& chmod 0666 /opt/projects/repository/workflow/project_id_repository/valid_id_repository
+
+COPY project.config /opt/projects/repository/workflow/.
+
+VOLUME /opt/projects/repository/output_repository
+
+CMD ["dummy"]

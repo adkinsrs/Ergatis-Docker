@@ -1,7 +1,7 @@
 # Ergatis-Docker
 
 ## Purpose
-This image is used as a jumping off point for building specific Ergatis pipelines.  Libraries, packages, and directories that are shared by most, if not all, of the various Ergatis pipelines, are installed here.  Since this image does not contain the Ergatis web code (see adkinsrs/ergatis-apache), this image has no real function as a process, and as such, just runs /bin/bash as its process.
+This repository holds the files to build the base Ergatis image in Docker.  In addition, a Dockerfile is present that creates the workflow and output\_repository data directory structures in a separate Docker image.
 
 ## General information
 

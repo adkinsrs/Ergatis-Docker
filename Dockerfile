@@ -1,13 +1,21 @@
 ###########################################################
-# Dockerfile to build Ergatis directory structure and install libraries
+# Dockerfile to install libraries for Ergatis
 # Has no function as an independent image
 # Based on Ubuntu
 ############################################################
 
-#FROM adkinsrs/workflow:3.2.0
-FROM ubuntu:trusty
-
+FROM adkinsrs/workflow:3.2.0
 MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
+
+# Manually set up the apache environment variables
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+ENV APACHE_LOCK_DIR /var/lock/apache2
+ENV APACHE_PID_FILE /var/run/apache2.pid
+ENV APACHE_RUN_DIR   /var/run/apache2
+
+RUN mkdir -p $APACHE_RUN_DIR $APACHE_LOCK_DIR $APACHE_LOG_DIR
 
 #--------------------------------------------------------------------------------
 # BASICS
@@ -20,15 +28,14 @@ MAINTAINER Shaun Adkins <sadkins@som.umaryland.edu>
 ### /var/www/html is where the Ergatis site and pipeline building UI will be
 
 RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
+	apache2 \
 	autoconf \
 	build-essential \
 	cpanminus \
-	curl \
 	dh-make-perl \
-	git \
+	libapache2-mod-php5 \
 	perl \
-	vim \
-	wget \
+	php5 \
 	zip unzip \
 	zlib1g-dev \
 	libcpan-meta-perl \
@@ -41,6 +48,7 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	libio-tee-perl \
 	libjson-perl \
 	liblog-log4perl-perl \
+	libmath-combinatorics-perl \
 	libperlio-gzip-perl \
 	libxml-parser-perl \
 	libxml-rss-perl \
@@ -59,31 +67,27 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	&& mkdir -p /var/www/html/config && chmod 777 /var/www/html/config
 
 #--------------------------------------------------------------------------------
-# SCRATCH
+# APACHE SETUP
+COPY 000-default.conf /etc/apache2/sites-enabled/.
+COPY ergatis.conf /etc/apache2/conf-enabled/.
+RUN a2enmod cgid
+RUN a2enmod php5
 
-RUN mkdir -m 0777 -p /usr/local/scratch \
-	&& mkdir -m 0777 /usr/local/scratch/ergatis \
-	&& mkdir -m 0777 /usr/local/scratch/ergatis/archival \
-	&& mkdir -m 0777 /usr/local/scratch/workflow  \
-	&& mkdir -m 0777 /usr/local/scratch/workflow/id_repository  \
-	&& mkdir -m 0777 /usr/local/scratch/workflow/runtime \
-	&& mkdir -m 0777 /usr/local/scratch/workflow/runtime/pipeline \
-	&& mkdir -m 0777 /usr/local/scratch/workflow/scripts \
-	&& mkdir -m 0777 /tmp/pipelines_building 
+# Set up site
+RUN mkdir /var/www/html/ergatis
+COPY htdocs/ /var/www/html/ergatis/
+COPY ergatis.ini /var/www/html/ergatis/cgi
 
+EXPOSE 80
 #--------------------------------------------------------------------------------
 # ERGATIS SETUP
 
 # Set up lib directory
 RUN mkdir -p /opt/ergatis/lib/perl5
+COPY lib/ /opt/ergatis/lib/
 ENV PERL5LIB=/opt/ergatis/lib/perl5
 
-# Add Ergatis.ini config file
-COPY ergatis.ini /var/www/html/config/
+ENTRYPOINT ["apache2"]
+CMD ["-D", "FOREGROUND"]
 
-# Set up area to store scripts
-RUN mkdir -p /opt/scripts
 
-# Lastly, set working directory to root directory
-WORKDIR /
-CMD ["/bin/bash"]
