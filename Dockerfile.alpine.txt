@@ -25,6 +25,7 @@ RUN apk add --no-cache \
 	perl-cgi-session \
 	perl-config-inifiles \
 	perl-cpan-meta-check \
+	perl-date-format \
 	perl-date-manip \
 	perl-dev \
 	perl-html-template \

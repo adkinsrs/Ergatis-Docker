@@ -33,9 +33,11 @@ RUN apt-get -q update && apt-get -q install -y --no-install-recommends \
 	build-essential \
 	cpanminus \
 	dh-make-perl \
+	git \
 	libapache2-mod-php5 \
 	perl \
 	php5 \
+	wget \
 	zip unzip \
 	zlib1g-dev \
 	libcpan-meta-perl \

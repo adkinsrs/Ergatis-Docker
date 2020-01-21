@@ -36,6 +36,4 @@ RUN mkdir -p /opt/projects/repository \
 
 COPY project.config /opt/projects/repository/workflow/.
 
-VOLUME /opt/projects/repository/output_repository
-
-CMD ["dummy"]
+CMD ["/bin/sh"]
